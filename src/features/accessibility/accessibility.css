@@ -1,0 +1,106 @@
+/* ---------- Barra de accesibilidad (escritorio) ---------- */
+.a11y-bar { background: var(--ink-deep); color: var(--on-ink-muted); display: none; }
+@media (min-width: 900px) { .a11y-bar { display: block; } }
+
+.a11y-bar__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 8px clamp(16px, 3.5vw, 80px);
+  font-size: var(--fs-small);
+}
+.a11y-bar__buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.a11y-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid #ffffff55;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: var(--fs-small);
+  cursor: pointer;
+}
+.a11y-bar__btn[data-hovered] { background: #ffffff1f; }
+.a11y-bar__btn.is-active { background: var(--sun); border-color: var(--sun); color: var(--text); font-weight: 700; }
+.a11y-bar__skip { margin-left: auto; color: var(--sun); font-size: var(--fs-small); }
+:root[data-vision='highContrast'] .a11y-bar__btn { border-color: #fff; border-width: 3px; }
+
+/* ---------- Diálogo ---------- */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(6 15 36 / 0.62);
+}
+.dialog-modal { width: min(820px, 100%); max-height: calc(100dvh - 32px); overflow: auto; border-radius: var(--radius-l); background: var(--surface); }
+.dialog { padding: 24px; display: grid; gap: 14px; outline: none; }
+.dialog__title { font-size: var(--fs-h2); }
+.dialog__lead { color: var(--muted); }
+.dialog__actions { display: flex; justify-content: flex-end; }
+
+/* ---------- Selector de colores (daltonismo) ---------- */
+.cv { display: grid; gap: 12px; }
+.cv__list { display: grid; gap: 12px; }
+.cv__note { padding: 12px 14px; border-radius: var(--radius-m); background: var(--warn-bg); color: var(--warn-fg); border: var(--border-w) solid var(--warn-line); }
+
+.cv-option {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  cursor: pointer;
+}
+.cv-option[data-selected] { border-color: var(--brand); background: var(--brand-soft); }
+.cv-option[data-focus-visible] { outline: var(--focus-w) solid var(--sun); outline-offset: 2px; box-shadow: 0 0 0 2px var(--ink); }
+.cv-option__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.cv-option__title { font-weight: 700; color: var(--ink); }
+.cv-option__desc { color: var(--muted); font-size: var(--fs-small); }
+.cv-option__badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; background: var(--brand); color: #fff; font-size: var(--fs-small); font-weight: 700; }
+
+/* Ejemplo pintado con los colores del modo (data-vision en la propia tarjeta) */
+.cv-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius-s);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  font-size: var(--fs-small);
+}
+.cv-preview__btn { padding: 8px 14px; border-radius: 10px; font-weight: 700; border: 2px solid transparent; }
+.cv-preview__btn--primary { background: var(--brand); color: #fff; }
+.cv-preview__btn--sun { background: var(--sun); color: var(--text); border-color: var(--text); }
+.cv-preview__rec { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 999px; background: var(--rec); color: #fff; font-weight: 700; }
+.cv-preview__chip { padding: 6px 12px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-weight: 700; border: 1px solid var(--brand); }
+.cv-preview__match { font-weight: 700; color: var(--text); text-decoration: underline; }
+
+/* ---------- Página /accessibility (celular) ---------- */
+.a11y-page { max-width: 640px; margin: 0 auto; padding: 16px 16px 48px; display: grid; gap: 16px; }
+.a11y-page__top { display: flex; justify-content: flex-end; }
+.a11y-page__lead { color: var(--muted); }
+.a11y-card { display: grid; padding: 4px 16px; border: var(--border-w) solid var(--line); border-radius: var(--radius-l); background: var(--surface); }
+.a11y-card > * + * { border-top: 1px solid var(--line); }
+.a11y-card > * { padding: 10px 0; }
+.a11y-link { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: var(--target); color: inherit; text-decoration: none; }
+.a11y-link__label { font-weight: 700; color: var(--ink); display: block; }
+.a11y-link__desc { color: var(--muted); font-size: var(--fs-small); display: block; }
+.a11y-help { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--radius-m); background: var(--ink); color: #fff; }
+:root[data-vision='highContrast'] .a11y-help { border: 3px solid #fff; }
+
+/* En el diálogo las 4 opciones van en 2 columnas para verlas todas sin desplazarse */
+@media (min-width: 700px) { .dialog .cv__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0B1B3A" />
+    <title>Capaz — Empleo para personas con discapacidad</title>
+
+    <!-- Fuentes del documento: Atkinson Hyperlegible (texto) y Bricolage Grotesque (títulos) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Aplica las preferencias de accesibilidad guardadas antes de pintar, para evitar un parpadeo de colores/tamaño -->
+    <script>
+      try {
+        var raw = localStorage.getItem('capaz-a11y');
+        var s = raw && JSON.parse(raw).state;
+        if (s) {
+          var el = document.documentElement;
+          if (s.vision && s.vision !== 'normal') el.setAttribute('data-vision', s.vision);
+          if (s.fontLarge) el.setAttribute('data-font', 'large');
+          if (s.easyRead) el.setAttribute('data-reading', 'easy');
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

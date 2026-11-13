@@ -1,0 +1,128 @@
+/*
+ * Tokens de diseño de Capaz.
+ * Fuente: documento (sección "Sistema visual") + variables del archivo Pencil.
+ * Los colores cambian con data-vision en <html>:
+ *   (sin atributo) = normal | redGreen | blueYellow | mono | highContrast
+ * El tamaño de letra cambia con data-font="large"; la lectura fácil con data-reading="easy".
+ */
+
+:root,
+[data-vision='normal'] {
+  /* Colores — modo normal (también se puede forzar en un elemento: vista previa del selector de colores) */
+  --ink: #0b1b3a;
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --text: #0f1a2e;
+  --muted: #46526a;
+  --line: #c8d0de;
+  --brand: #1d4ed8;
+  --brand-soft: #e5ecfc;
+  --sun: #f5b000;
+  --rec: #b42318;
+  --ods: #dd1367;
+
+  /* Tokens que están en Pencil pero no en la tabla del documento */
+  --ink-deep: #060f24;
+  --on-ink-muted: #c3cce0;
+  --warn-bg: #fff4d6;
+  --warn-fg: #5c3b00;
+  --warn-line: #d9a21b;
+  --border-w: 1.5px;
+  --weight-body: 400;
+}
+
+:root {
+  /* Tipografía */
+  --font-body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --font-scale: 1;
+
+  /* Escala (texto mínimo 15 px, 17 px en campos). Todo se multiplica por --font-scale */
+  --fs-small: calc(15px * var(--font-scale));
+  --fs-body: calc(16px * var(--font-scale));
+  --fs-field: calc(17px * var(--font-scale));
+  --fs-lead: calc(18px * var(--font-scale));
+  --fs-h3: calc(20px * var(--font-scale));
+  --fs-h2: calc(26px * var(--font-scale));
+  --fs-h1: calc(34px * var(--font-scale));
+
+  /* Tamaños táctiles: 56 px mínimo, 68 px con letra grande */
+  --target: 56px;
+
+  /* Formas */
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+  --focus-w: 3px;
+}
+
+/* Colores para daltonismo — rojo/verde (protanopia, deuteranopia) */
+[data-vision='redGreen'] {
+  --brand: #0063a8;
+  --brand-soft: #e1eef7;
+  --sun: #e69f00;
+  --rec: #c24e00;
+}
+
+/* Colores para daltonismo — azul/amarillo (tritanopia) */
+[data-vision='blueYellow'] {
+  --brand: #0e6e7e;
+  --brand-soft: #ddf1f3;
+  --sun: #f47c7c;
+  --rec: #1f2937;
+  --warn-bg: #fdecec;
+  --warn-fg: #6b1a1a;
+  --warn-line: #e07a7a;
+}
+
+/* Colores para daltonismo — monocromo (acromatopsia) */
+[data-vision='mono'] {
+  --ink: #5c5c5c;
+  --muted: #3a3a3a;
+  --line: #8a8a8a;
+  --brand: #000000;
+  --brand-soft: #ededed;
+  --sun: #f5f5f5;
+  --ods: #555555;
+  --rec: #2e2e2e;
+  --ink-deep: #444444;
+  --on-ink-muted: #d0d0d0;
+  --warn-bg: #f2f2f2;
+  --warn-fg: #111111;
+  --warn-line: #111111;
+}
+
+/* Alto contraste: negro y blanco puros, bordes de 3 px y texto en negrita */
+[data-vision='highContrast'] {
+  --ink: #000000;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #000000;
+  --muted: #000000;
+  --line: #000000;
+  --brand: #0033cc;
+  --brand-soft: #ffffff;
+  --sun: #ffd400;
+  --rec: #b00000;
+  --ink-deep: #000000;
+  --on-ink-muted: #ffffff;
+  --warn-bg: #ffffff;
+  --warn-fg: #000000;
+  --warn-line: #000000;
+  --border-w: 3px;
+  --weight-body: 700;
+}
+
+/* Letra grande: escala x1,35 y botones/campos de 68 px */
+:root[data-font='large'] {
+  --font-scale: 1.35;
+  --target: 68px;
+}
+
+/* Lectura fácil: letra de 20 px (los textos simples se cargan desde src/content/easy-read) */
+:root[data-reading='easy'] {
+  --fs-body: 20px;
+  --fs-field: 20px;
+  --fs-small: 20px;
+  --fs-lead: 22px;
+}

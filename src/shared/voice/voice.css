@@ -1,0 +1,35 @@
+/* Botón de micrófono junto al campo. Estados: idle (fondo brandSoft) y listening (cuadrado, fondo rec). */
+.voice-mic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--target);
+  min-height: var(--target);
+  align-self: flex-start;
+  border: var(--border-w) solid var(--brand);
+  border-radius: var(--radius-m);
+  background: var(--brand-soft);
+  color: var(--brand);
+  cursor: pointer;
+}
+.voice-mic[data-hovered] { filter: brightness(0.95); }
+
+.voice-mic--listening {
+  background: var(--rec);
+  border-color: var(--rec);
+  color: #fff;
+  animation: voice-pulse 1.4s ease-out infinite;
+}
+
+/* El borde del campo también cambia a rec mientras se escucha (el estado nunca depende solo del color: icono ■ + texto) */
+.ui-field__row:has(.voice-mic--listening) .ui-field__input { border-color: var(--rec); }
+
+@keyframes voice-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--rec) 45%, transparent); }
+  100% { box-shadow: 0 0 0 14px transparent; }
+}
+
+/* Sin animación de pulso si la persona lo pidió */
+@media (prefers-reduced-motion: reduce) {
+  .voice-mic--listening { animation: none; }
+}

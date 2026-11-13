@@ -1,0 +1,54 @@
+/* ---------- Cabecera ---------- */
+.app-header { background: var(--ink); color: #fff; }
+.app-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 14px 16px;
+}
+.app-header__logo { text-decoration: none; }
+.app-header__actions { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+.app-header__options { color: #fff; font-weight: 700; }
+.app-header .ui-button { min-height: 44px; padding: 0 18px; }
+
+.app-header__nav { display: none; width: 100%; flex-direction: column; gap: 4px; order: 3; }
+.app-header__nav.is-open { display: flex; }
+.app-header__nav a {
+  display: block;
+  padding: 12px 4px;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+.app-header__nav a.active { color: var(--sun); font-weight: 700; border-bottom-color: var(--sun); }
+
+.app-header__menu {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid #ffffff66;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Escritorio: menú en línea, sin botón "Menú" y sin "Opciones" (ya existe la barra de accesibilidad) */
+@media (min-width: 900px) {
+  .app-header__inner { padding: 18px 80px; }
+  .app-header__options { display: none; }
+  .app-header__menu { display: none; }
+  .app-header__nav { display: flex; flex-direction: row; width: auto; order: 0; gap: 28px; margin-left: 24px; }
+  .app-header__nav a { padding: 8px 0; }
+  /* Letra grande: el menú vuelve a ser un botón para que nada se corte */
+  :root[data-font='large'] .app-header__menu { display: inline-flex; }
+  :root[data-font='large'] .app-header__nav { display: none; width: 100%; flex-direction: column; order: 3; margin-left: 0; }
+  :root[data-font='large'] .app-header__nav.is-open { display: flex; }
+  :root[data-font='large'] .app-header__options { display: inline; }
+}

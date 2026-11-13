@@ -1,0 +1,77 @@
+/* ---------- Esqueleto del registro ---------- */
+.signup { min-height: 100dvh; background: var(--bg); }
+.signup__side { display: none; }
+.signup__main { padding: 8px 16px 32px; max-width: 760px; margin: 0 auto; }
+
+/* Barra superior (celular) */
+.signup__topbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.signup__back, .signup__read {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px;
+  color: var(--brand); font: inherit; font-weight: 700; text-decoration: none; background: none; border: 0; cursor: pointer;
+}
+.signup__read.is-active { background: var(--sun); color: var(--text); border-radius: var(--radius-m); padding: 0 12px; }
+
+/* Escritorio: barra lateral + contenido */
+@media (min-width: 900px) {
+  .signup { display: grid; grid-template-columns: minmax(300px, 420px) minmax(0, 1fr); }
+  .signup__topbar { display: none; }
+  .signup__side {
+    display: flex; flex-direction: column; gap: 28px; padding: 40px 32px;
+    background: var(--ink-deep); color: #fff; position: sticky; top: 0; height: 100dvh; overflow-y: auto;
+  }
+  .signup__main { padding: 56px clamp(32px, 6vw, 96px) 48px; max-width: none; margin: 0; }
+}
+.signup__logo { text-decoration: none; }
+.signup__job { display: grid; gap: 4px; padding: 16px 18px; border: 1px solid #ffffff2e; border-radius: var(--radius-l); background: #ffffff12; }
+.signup__job-label, .signup__job-sub { color: var(--on-ink-muted); font-size: var(--fs-small); }
+.signup__job-title { font-family: var(--font-display); font-size: var(--fs-h3); line-height: 1.2; }
+
+.signup__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
+.signup__step { display: flex; align-items: flex-start; gap: 14px; position: relative; color: #fff; }
+.signup__step:not(:last-child)::before { content: ''; position: absolute; left: 19px; top: 44px; bottom: -22px; width: 2px; background: #ffffff40; }
+.signup__bullet {
+  flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid #ffffff80; font-weight: 700;
+}
+.signup__step-title { display: block; font-weight: 700; font-size: var(--fs-lead); }
+.signup__step-desc { display: block; color: var(--on-ink-muted); font-size: var(--fs-small); }
+.signup__step.is-current .signup__bullet { background: var(--sun); border-color: var(--sun); color: var(--text); }
+.signup__step.is-current .signup__step-title { color: var(--sun); }
+.signup__step.is-done .signup__bullet { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+.signup__help { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border-radius: var(--radius-m); background: #ffffff12; color: #fff; font-size: var(--fs-small); }
+.signup__help svg { flex: none; color: var(--sun); }
+.signup__a11y { color: var(--sun); font-weight: 700; }
+:root[data-vision='highContrast'] .signup__job,
+:root[data-vision='highContrast'] .signup__help { border: 3px solid #fff; }
+
+/* ---------- Cada paso ---------- */
+.step { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.step__count { color: var(--brand); font-weight: 700; font-size: var(--fs-small); letter-spacing: 0.02em; }
+.step__bar { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: -12px; }
+.step__bar > span { display: block; height: 100%; background: var(--brand); border-radius: 999px; }
+.step__title { font-size: calc(var(--fs-h1) * 1.1); letter-spacing: -0.025em; margin-top: 4px; }
+.step__lead { color: var(--muted); font-size: var(--fs-lead); max-width: 62ch; }
+.step__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+@media (min-width: 900px) { .step__grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; } }
+.step__footer { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 8px; }
+.step__footer .ui-button { flex: 1 1 200px; }
+.step__footer .step__spacer { flex: 1 1 0; }
+@media (min-width: 900px) { .step__footer .ui-button { flex: 0 0 auto; } .step__footer .step__next { margin-left: auto; } }
+.step__note { color: var(--muted); font-size: var(--fs-small); }
+
+/* ---------- Subida de hoja de vida ---------- */
+.cv-upload__label { color: var(--brand); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cv-upload .sr-only:focus-visible + .cv-upload__label { outline: var(--focus-w) solid var(--sun); outline-offset: 3px; box-shadow: 0 0 0 2px var(--ink); }
+
+/* ---------- Paso 4: privacidad ---------- */
+.privacy-card { display: grid; padding: 4px 18px; border: var(--border-w) solid var(--line); border-radius: var(--radius-l); background: var(--surface); }
+.privacy-card > * { padding: 10px 0; }
+.privacy-card > * + * { border-top: 1px solid var(--line); }
+.privacy-preview { display: grid; gap: 8px; padding: 20px; border: var(--border-w) solid var(--brand); border-radius: var(--radius-l); background: var(--brand-soft); }
+.privacy-preview__title { font-size: var(--fs-h3); }
+.privacy-preview__name { font-weight: 700; font-size: var(--fs-lead); color: var(--ink); }
+.privacy-preview__summary, .privacy-preview__label { color: var(--muted); }
+.privacy-preview__tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 6px 0 0; padding: 0; }
+.privacy-preview__tags li { padding: 4px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--brand); color: var(--brand); font-weight: 700; font-size: var(--fs-small); }
+.privacy-preview__hidden { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ink); }
