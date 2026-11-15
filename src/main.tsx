@@ -12,10 +12,19 @@ if (import.meta.env.DEV) {
   )
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Providers>
-      <RouterProvider router={router} />
-    </Providers>
-  </StrictMode>,
-)
+// Datos de prueba (MSW): el admin y el match funcionan sin backend real (documento). Se apagan con VITE_API_MOCKS=false.
+async function enableMocking() {
+  if (import.meta.env.VITE_API_MOCKS === 'false') return
+  const { worker } = await import('@/mocks/browser')
+  await worker.start({ onUnhandledFrame: 'bypass', quiet: true })
+}
+
+void enableMocking().then(() => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <Providers>
+        <RouterProvider router={router} />
+      </Providers>
+    </StrictMode>,
+  )
+})

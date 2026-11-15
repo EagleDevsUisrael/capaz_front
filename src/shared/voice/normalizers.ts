@@ -3,7 +3,7 @@
  * Funciones puras, sin dependencias: se pueden probar fuera del navegador.
  */
 
-export type FieldKind = 'name' | 'email' | 'phone' | 'idNumber' | 'city' | 'longText'
+export type FieldKind = 'name' | 'email' | 'phone' | 'idNumber' | 'city' | 'longText' | 'query'
 
 const DIGITS: Record<string, string> = {
   cero: '0',
@@ -67,4 +67,6 @@ export const normalizers: Record<FieldKind, (text: string) => string> = {
   city: toTitleCase,
   // Experiencia o ajustes: se agrega al texto existente (lo hace VoiceField), aquí solo se limpia
   longText: (t) => t.trim(),
+  // Búsqueda de empleo: se escribe tal cual, sin punto final
+  query: (t) => t.trim().replace(/[.,;]+$/, ''),
 }

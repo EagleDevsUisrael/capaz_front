@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { useSession } from '@/features/auth/useSession'
 import { Button, Switch } from '@/shared/ui'
 import { ShieldCheckIcon } from '@/shared/ui/icons'
 import { ACCOMMODATIONS, EDUCATION_LEVELS, labelOf } from './options'
@@ -25,6 +26,7 @@ export function PrivacyStep() {
     // TODO(backend): enviar el registro completo (datos + consentimiento) y recibir la sesión
     savePrivacy({ shareOnlyAccommodations: shareOnly, discoverable })
     markCompleted(4)
+    useSession.getState().signIn() // demostración: sin backend no hay sesión real
     navigate('/for-you')
   }
 
