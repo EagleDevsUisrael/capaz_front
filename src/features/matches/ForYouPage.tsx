@@ -190,10 +190,13 @@ function Results({ data, profile }: { data: MatchesResponse; profile: Profile | 
             </button>
           )}
         </div>
-        {ai.q.isPending && <p className="foryou__small foryou__ai-loading" role="status">Analizando tus ajustes y experiencia laboral…</p>}
         {recommended.length === 0 ? (
           <p className="foryou__state">
             No hay recomendaciones nuevas. Revisa todas las ofertas: hay {counts.totalJobs} publicadas.
+          </p>
+        ) : ai.q.isPending ? (
+          <p className="foryou__state foryou__ai-loading" role="status">
+            Analizando tus ajustes y experiencia laboral…
           </p>
         ) : (
           <RecommendedCarousel items={recommended} aiItems={ai.q.data?.items ?? []} />
