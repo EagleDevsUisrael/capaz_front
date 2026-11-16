@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
+import Cropper, { type Area, type Point } from 'react-easy-crop'
+import 'react-easy-crop/react-easy-crop.css'
 import { Button } from '@/shared/ui'
 import { ArrowLeftIcon, CheckIcon } from '@/shared/ui/icons'
+import { CARD_ASPECT, cropCameraFrame, cropGalleryImage } from './idCardImage'
 import { SIDE_LABEL, useIdCardPhotos, type Side } from './idCardPhotos'
 import { useSignupStore } from './useSignupStore'
 import './signup.css'
 
-type Phase = 'starting' | 'framing' | 'ready' | 'review' | 'noCamera'
+type Phase = 'starting' | 'framing' | 'ready' | 'cropping' | 'processing' | 'review' | 'noCamera'
 
 /** Tiempo con la cámara quieta antes de pasar a "listo" (no detectamos el carnet: es una guía) */
 const READY_AFTER_MS = 1500
@@ -23,11 +26,17 @@ export function IdCardCamera() {
   const setPhoto = useIdCardPhotos((s) => s.setPhoto)
   const saveIdCard = useSignupStore((s) => s.saveIdCard)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const guideRef = useRef<HTMLDivElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const hasCamera = typeof navigator !== 'undefined' && Boolean(navigator.mediaDevices?.getUserMedia)
   const [phase, setPhase] = useState<Phase>(hasCamera ? 'starting' : 'noCamera')
   const [shot, setShot] = useState<{ blob: Blob; url: string } | null>(null)
+  const [gallery, setGallery] = useState<{ file: File; url: string } | null>(null)
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedArea, setCroppedArea] = useState<Area | null>(null)
+  const [photoError, setPhotoError] = useState<string | null>(null)
   const label = SIDE_LABEL[side].toLowerCase()
 
   const stop = () => {
@@ -56,6 +65,7 @@ export function IdCardCamera() {
 
   /** "Intentar de nuevo" / volver a tomar: desde un evento sí se puede poner 'starting' primero */
   const start = () => {
+    stop()
     setPhase(hasCamera ? 'starting' : 'noCamera')
     void openStream()
   }
@@ -76,23 +86,52 @@ export function IdCardCamera() {
   }, [phase])
 
   useEffect(() => () => { if (shot) URL.revokeObjectURL(shot.url) }, [shot])
+  useEffect(() => () => { if (gallery) URL.revokeObjectURL(gallery.url) }, [gallery])
 
-  const capture = () => {
+  const setReview = (blob: Blob) => {
+    setShot((previous) => {
+      if (previous) URL.revokeObjectURL(previous.url)
+      return { blob, url: URL.createObjectURL(blob) }
+    })
+    setPhase('review')
+  }
+
+  const capture = async () => {
     const v = videoRef.current
-    if (!v || !v.videoWidth) return
-    const canvas = document.createElement('canvas')
-    canvas.width = v.videoWidth
-    canvas.height = v.videoHeight
-    canvas.getContext('2d')?.drawImage(v, 0, 0)
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) return
-        setShot({ blob, url: URL.createObjectURL(blob) })
-        setPhase('review')
-      },
-      'image/jpeg',
-      0.9,
-    )
+    const frame = guideRef.current
+    if (!v || !v.videoWidth || !frame) return
+    setPhase('processing')
+    setPhotoError(null)
+    try {
+      setReview(await cropCameraFrame(v, frame))
+    } catch {
+      setPhotoError('No pudimos preparar la foto. Intenta tomarla otra vez.')
+      setPhase('ready')
+    }
+  }
+
+  const chooseFromGallery = (file: File | undefined) => {
+    if (!file || !file.type.startsWith('image/')) return
+    if (gallery) URL.revokeObjectURL(gallery.url)
+    stop()
+    setGallery({ file, url: URL.createObjectURL(file) })
+    setCrop({ x: 0, y: 0 })
+    setZoom(1)
+    setCroppedArea(null)
+    setPhotoError(null)
+    setPhase('cropping')
+  }
+
+  const confirmGalleryCrop = async () => {
+    if (!gallery || !croppedArea) return
+    setPhase('processing')
+    setPhotoError(null)
+    try {
+      setReview(await cropGalleryImage(gallery.file, croppedArea))
+    } catch {
+      setPhotoError('No pudimos abrir esa imagen. Elige una foto JPG, PNG o WebP.')
+      setPhase('cropping')
+    }
   }
 
   const use = (blob: Blob) => {
@@ -108,6 +147,8 @@ export function IdCardCamera() {
     starting: 'Abriendo la cámara…',
     framing: `Encuadra el ${label} del carnet dentro del recuadro`,
     ready: '¡Listo! Toca el botón para tomar la foto',
+    cropping: 'Mueve y amplía la foto hasta que el carnet llene el recuadro',
+    processing: 'Mejorando la foto…',
     review: '¿Se leen bien los datos?',
     noCamera: 'No pudimos abrir la cámara. Elige una foto de tu teléfono.',
   }
@@ -123,28 +164,44 @@ export function IdCardCamera() {
         </h1>
       </header>
 
-      <div className="camera__stage">
+      <div className="camera__stage" aria-busy={phase === 'processing'}>
         <video
           ref={videoRef}
           className="camera__video"
           playsInline
           muted
           aria-hidden="true"
-          hidden={phase === 'review' || phase === 'noCamera'}
+          hidden={phase === 'review' || phase === 'cropping' || phase === 'processing' || phase === 'noCamera'}
         />
         {phase === 'review' && shot && (
-          <img src={shot.url} alt={`Foto tomada del ${label} de tu carnet`} className="camera__video" />
+          <img src={shot.url} alt={`Foto tomada y recortada del ${label} de tu carnet`} className="camera__preview" />
+        )}
+        {phase === 'cropping' && gallery && (
+          <Cropper
+            image={gallery.url}
+            crop={crop}
+            zoom={zoom}
+            aspect={CARD_ASPECT}
+            onCropChange={setCrop}
+            onZoomChange={setZoom}
+            onCropComplete={(_, pixels) => setCroppedArea(pixels)}
+            cropShape="rect"
+            showGrid
+            objectFit="contain"
+          />
         )}
         {(phase === 'framing' || phase === 'ready') && (
-          <div className={`camera__guide${phase === 'ready' ? ' is-ready' : ''}`} aria-hidden="true">
+          <div ref={guideRef} className={`camera__guide${phase === 'ready' ? ' is-ready' : ''}`} aria-hidden="true">
             {phase === 'ready' && <CheckIcon size={48} />}
           </div>
         )}
+        {phase === 'processing' && <div className="camera__processing">Preparando imagen…</div>}
       </div>
 
       <p className="camera__status" role="status" aria-live="polite">
         {status[phase]}
       </p>
+      {photoError && <p className="camera__error" role="alert">{photoError}</p>}
 
       <div className="camera__actions">
         {(phase === 'framing' || phase === 'ready') && (
@@ -157,8 +214,29 @@ export function IdCardCamera() {
             <Button fullWidth onPress={() => use(shot.blob)}>
               Usar esta foto
             </Button>
-            <Button variant="secondary" fullWidth onPress={() => { setShot(null); setPhase('framing') }}>
+            <Button variant="secondary" fullWidth onPress={() => { setShot(null); start() }}>
               Tomar otra
+            </Button>
+          </>
+        )}
+        {phase === 'cropping' && (
+          <>
+            <label className="camera__zoom">
+              Ampliar foto
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.05}
+                value={zoom}
+                onChange={(event) => setZoom(Number(event.target.value))}
+              />
+            </label>
+            <Button fullWidth onPress={confirmGalleryCrop} isDisabled={!croppedArea}>
+              Usar este recorte
+            </Button>
+            <Button variant="secondary" fullWidth onPress={start}>
+              Cancelar
             </Button>
           </>
         )}
@@ -167,20 +245,23 @@ export function IdCardCamera() {
             Intentar abrir la cámara otra vez
           </Button>
         )}
-        <input
-          id="camera-file"
-          className="sr-only"
-          type="file"
-          accept="image/*"
-          capture="environment"
-          onChange={(e) => {
-            const f = e.target.files?.[0]
-            if (f) use(f)
-          }}
-        />
-        <label htmlFor="camera-file" className="camera__file">
-          Elegir una foto del teléfono
-        </label>
+        {phase !== 'cropping' && phase !== 'processing' && (
+          <>
+            <input
+              id="camera-file"
+              className="sr-only"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(event) => {
+                chooseFromGallery(event.target.files?.[0])
+                event.target.value = ''
+              }}
+            />
+            <label htmlFor="camera-file" className="camera__file">
+              Elegir de la galería
+            </label>
+          </>
+        )}
         <p className="camera__tip">Consejo: pon el carnet sobre una mesa oscura, con buena luz y sin reflejos.</p>
       </div>
     </div>

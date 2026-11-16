@@ -12,7 +12,7 @@ import { DISABILITY_TYPES } from './options'
 import { StepFrame } from './StepFrame'
 import { emptyIdCard, useSignupStore, type IdCardData, type IdCardField } from './useSignupStore'
 
-const IMAGE_TYPES = 'image/jpeg,image/png,image/webp,image/heic'
+const IMAGE_TYPES = 'image/jpeg,image/png,image/webp'
 
 /** "1985-03-12" → "12/03/1985" */
 const showDate = (v: string) => (/^\d{4}-\d{2}-\d{2}$/.test(v) ? v.split('-').reverse().join('/') : v)
@@ -325,11 +325,10 @@ function PhotoTile({ side }: { side: Side }) {
           className="sr-only"
           type="file"
           accept={IMAGE_TYPES}
-          capture="environment"
           onChange={(e) => take(e.target.files?.[0])}
         />
         <label htmlFor={inputId} className="cv-upload__label">
-          Subir archivo del {label.toLowerCase()}
+          Elegir de la galería ({label.toLowerCase()})
         </label>
       </div>
     </div>
