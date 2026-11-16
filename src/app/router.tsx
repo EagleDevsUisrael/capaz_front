@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
+﻿import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
 import { AccessibilityPage } from '@/features/accessibility/AccessibilityPage'
 import { ColorVisionPage } from '@/features/accessibility/ColorVisionPage'
 import { AdminJobsPage } from '@/features/admin/AdminJobsPage'
@@ -15,6 +15,7 @@ import { IdCardStep } from '@/features/signup/IdCardStep'
 import { PrivacyStep } from '@/features/signup/PrivacyStep'
 import { SignupLayout } from '@/features/signup/SignupLayout'
 import { AppLayout } from './AppLayout'
+import { RequireSessionRoute } from './RequireSession'
 import { PlainShell, PublicShell } from './shells'
 
 // Rutas del documento ("Inventario de pantallas"), en inglés.
@@ -22,13 +23,19 @@ import { PlainShell, PublicShell } from './shells'
 const publicRoutes: RouteObject[] = [
   { index: true, element: <JobsPage /> },
   { path: 'jobs/:jobId', element: <JobDetailPage /> },
-  { path: 'for-you', element: <ForYouPage /> },
-  { path: 'applications', element: <ApplicationsPage /> },
+  // Requieren sesión: sin sesión van a /login?next=...
+  {
+    element: <RequireSessionRoute />,
+    children: [
+      { path: 'for-you', element: <ForYouPage /> },
+      { path: 'applications', element: <ApplicationsPage /> },
+    ],
+  },
 ]
 
 const plainRoutes: RouteObject[] = [
   { path: 'login', element: <LoginPage /> },
-  { path: 'applications/:applicationId/sent', element: <ApplicationSent /> },
+  { element: <RequireSessionRoute />, children: [{ path: 'applications/:applicationId/sent', element: <ApplicationSent /> }] },
   { path: 'accessibility', element: <AccessibilityPage /> },
   { path: 'accessibility/colors', element: <ColorVisionPage /> },
   { path: 'admin/jobs', element: <AdminJobsPage /> },

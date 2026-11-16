@@ -1,4 +1,8 @@
+import { useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { errorMessage } from '@/shared/api/client'
+import { Field } from '@/shared/ui'
+import { sendPhoneCode, verifyPhoneCode, type CodeSent } from './api'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
@@ -39,10 +43,61 @@ export function ContactStep() {
     mode: 'onTouched',
   })
 
+  const verification = useSignupStore((s) => s.phoneVerification)
+  const savePhoneVerification = useSignupStore((s) => s.savePhoneVerification)
+  const setStepError = useSignupStore((s) => s.setStepError)
+  const [sent, setSent] = useState<(CodeSent & { phone: string }) | null>(null)
+  const [code, setCode] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const codeRef = useRef<HTMLDivElement>(null)
+
+  /** La verificación sirve 30 minutos y solo para el mismo número */
+  const verifiedFor = (phone: string) =>
+    verification?.phone === phone && new Date(verification.usableUntil).getTime() > Date.now() + 60_000
+
+  const goNext = () => {
+    markCompleted(2)
+    setStepError(null)
+    navigate('/signup/experience')
+  }
+
+  const requestCode = async (phone: string) => {
+    setBusy(true)
+    setError(null)
+    try {
+      const r = await sendPhoneCode(phone)
+      setSent({ ...r, phone })
+      setCode('')
+      requestAnimationFrame(() => codeRef.current?.querySelector('input')?.focus())
+    } catch (e) {
+      setError(errorMessage(e))
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const onValid = (v: FormValues) => {
     saveContact({ ...v, fullName: v.fullName.trim(), city: v.city.trim() })
-    markCompleted(2)
-    navigate('/signup/experience')
+    if (verifiedFor(v.phone)) return goNext()
+    if (sent?.phone === v.phone) return codeRef.current?.querySelector('input')?.focus()
+    void requestCode(v.phone)
+  }
+
+  const confirmCode = async () => {
+    if (!sent) return
+    if (!/^\d{4}$/.test(code)) return setError('El código tiene 4 dígitos')
+    setBusy(true)
+    setError(null)
+    try {
+      const r = await verifyPhoneCode(sent.verificationId, code)
+      savePhoneVerification({ id: sent.verificationId, phone: r.phone, usableUntil: r.usableUntil })
+      goNext()
+    } catch (e) {
+      setError(errorMessage(e))
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -51,7 +106,7 @@ export function ContactStep() {
       title="¿Cómo te contactamos?"
       lead="La empresa te llamará o escribirá a estos datos. Toca el micrófono de cualquier campo y di tus datos en voz alta."
     >
-      <form noValidate onSubmit={handleSubmit(onValid, focusFirstInvalid)} className="step">
+      <form noValidate onSubmit={(e) => void handleSubmit(onValid, focusFirstInvalid)(e)} className="step">
         <div className="step__grid step__grid--2">
           <Controller
             name="fullName"
@@ -122,12 +177,49 @@ export function ContactStep() {
 
         <p className="step__note">Después de dictar, leemos en voz alta lo que entendimos para que puedas confirmarlo.</p>
 
+        {sent && (
+          <section className="phone-code" aria-labelledby="phone-code-title" ref={codeRef}>
+            <h2 id="phone-code-title" className="phone-code__title">Confirma tu celular</h2>
+            <p>
+              Te enviamos un código de 4 dígitos por {sent.channel === 'sms' ? 'SMS' : 'WhatsApp'} al {sent.phone}.
+            </p>
+            <Field
+              label="Código de 4 dígitos"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={code}
+              onChange={(x) => setCode(x.replace(/\D/g, '').slice(0, 4))}
+              hint={sent.devCode ? `Demostración: ingresa este código ${sent.devCode}` : undefined}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  void confirmCode()
+                }
+              }}
+            />
+            <div className="step__footer">
+              <Button onPress={confirmCode} isDisabled={busy}>
+                {busy ? 'Confirmando…' : 'Confirmar código'}
+              </Button>
+              <Button variant="ghost" onPress={() => requestCode(sent.phone)} isDisabled={busy}>
+                ¿No llegó? Enviar otro código
+              </Button>
+            </div>
+          </section>
+        )}
+        {error && (
+          <p role="alert" className="step__alert">
+            {error}
+          </p>
+        )}
+
         <div className="step__footer">
-          <Button variant="secondary" onPress={() => navigate('/signup/id-card')}>
+          <Button variant="secondary" type="button" onPress={() => navigate('/signup/id-card')}>
             Volver al paso 1
           </Button>
-          <Button type="submit" className="step__next">
-            Continuar al paso 3 <ArrowRightIcon />
+          {/* Si ya se envió el código, este botón lleva al campo del código (o reenvía si cambió el número) */}
+          <Button type="submit" className="step__next" isDisabled={busy}>
+            {busy && !sent ? 'Enviando código…' : 'Continuar al paso 3'} <ArrowRightIcon />
           </Button>
         </div>
         <p className="step__note">Tus datos se guardan si sales.</p>

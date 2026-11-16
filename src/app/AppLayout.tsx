@@ -7,14 +7,14 @@ import { Outlet, useLocation } from 'react-router'
  */
 export function AppLayout() {
   const { pathname } = useLocation()
-  const firstRender = useRef(true)
+  const lastPath = useRef(pathname)
 
   useEffect(() => {
-    // No robar el foco en la carga inicial; solo en navegaciones
-    if (firstRender.current) {
-      firstRender.current = false
-      return
-    }
+    // No robar el foco en la carga inicial; solo en navegaciones.
+    // Se compara con la ruta anterior (no con un "primer render"): en StrictMode el efecto corre dos veces
+    // al montar y el foco se iba al <h1>, saltándose el enlace "Saltar al contenido principal".
+    if (lastPath.current === pathname) return
+    lastPath.current = pathname
     const main = document.getElementById('main')
     const heading = main?.querySelector<HTMLElement>('h1')
     const target = heading ?? main

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { ApiError, errorMessage } from '@/shared/api/client'
 import { useSession } from '@/features/auth/useSession'
 import { useSignupStore } from '@/features/signup/useSignupStore'
 import { Button } from '@/shared/ui'
@@ -42,11 +43,16 @@ export function ApplyButton({ job, label = 'Postular a esta oferta', fullWidth }
       <Button variant="sun" fullWidth={fullWidth} onPress={onPress} isDisabled={apply.isPending}>
         {apply.isPending ? 'Enviando…' : label} {!apply.isPending && <ArrowRightIcon />}
       </Button>
-      {apply.isError && (
-        <p className="apply__error" role="alert">
-          ⚠ No pudimos enviar tu postulación. Inténtalo otra vez.
-        </p>
-      )}
+      {apply.isError &&
+        (apply.error instanceof ApiError && apply.error.status === 409 ? (
+          <p className="apply__error" role="status">
+            Ya postulaste a esta oferta. <Link to="/applications">Ver mis postulaciones</Link>
+          </p>
+        ) : (
+          <p className="apply__error" role="alert">
+            ⚠ {errorMessage(apply.error)}
+          </p>
+        ))}
 
       <ModalOverlay isOpen={askOpen} onOpenChange={setAskOpen} isDismissable className="dialog-overlay">
         <Modal className="dialog-modal dialog-modal--small">

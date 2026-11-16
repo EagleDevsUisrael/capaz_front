@@ -1,7 +1,8 @@
-import { Outlet } from 'react-router'
+﻿import { Outlet } from 'react-router'
 import { AccessibilityBar } from '@/features/accessibility/AccessibilityBar'
 import { SkipLink } from '@/shared/ui'
 import { AppHeader } from './AppHeader'
+import { TabBar } from './TabBar'
 
 /** Pantallas públicas: barra de accesibilidad (escritorio) + cabecera + contenido. */
 export function PublicShell() {
@@ -10,9 +11,10 @@ export function PublicShell() {
       <SkipLink />
       <AccessibilityBar />
       <AppHeader />
-      <main id="main" tabIndex={-1}>
+      <main id="main" tabIndex={-1} className="public-main">
         <Outlet />
       </main>
+      <TabBar />
     </>
   )
 }

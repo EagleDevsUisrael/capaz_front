@@ -61,7 +61,8 @@
 .step__note { color: var(--muted); font-size: var(--fs-small); }
 
 /* ---------- Subida de hoja de vida ---------- */
-.cv-upload__label { color: var(--brand); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+/* Es el botón para elegir el archivo: área táctil de al menos 44 px de alto */
+.cv-upload__label { display: inline-flex; align-items: center; min-height: 44px; color: var(--brand); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .cv-upload .sr-only:focus-visible + .cv-upload__label { outline: var(--focus-w) solid var(--sun); outline-offset: 3px; box-shadow: 0 0 0 2px var(--ink); }
 
 /* ---------- Paso 4: privacidad ---------- */
@@ -75,3 +76,56 @@
 .privacy-preview__tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 6px 0 0; padding: 0; }
 .privacy-preview__tags li { padding: 4px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--brand); color: var(--brand); font-weight: 700; font-size: var(--fs-small); }
 .privacy-preview__hidden { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ink); }
+
+/* ---------- Avisos de error del paso ---------- */
+.step__alert { padding: 14px 16px; border: var(--border-w) solid var(--danger, #b3261e); border-radius: var(--radius-m); background: var(--surface); color: var(--text); }
+.step__alert:focus-visible { outline: var(--focus-w) solid var(--sun); outline-offset: 3px; }
+.step__alert ul { margin: 6px 0 0; padding-left: 20px; }
+
+/* ---------- Paso 1: carnet ---------- */
+.idcard-tiles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 700px) { .idcard-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.idcard-tile { display: grid; gap: 12px; padding: 16px; border: var(--border-w) dashed var(--line); border-radius: var(--radius-l); background: var(--surface); }
+.idcard-tile.is-over { border-color: var(--brand); background: var(--brand-soft); }
+.idcard-tile.has-photo { border-style: solid; border-color: var(--brand); }
+.idcard-tile__title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: var(--fs-lead); }
+.idcard-tile__title svg { color: var(--brand); }
+.idcard-tile__img, .idcard-tile__empty { width: 100%; aspect-ratio: 85.6 / 54; border-radius: var(--radius-m); object-fit: cover; }
+.idcard-tile__empty { display: grid; place-items: center; background: var(--bg); color: var(--muted); }
+.idcard-tile__actions { display: grid; gap: 10px; justify-items: start; }
+.idcard-tile__actions .ui-button { text-decoration: none; min-height: 48px; display: inline-flex; align-items: center; }
+.idcard-tile .sr-only:focus-visible + .cv-upload__label { outline: var(--focus-w) solid var(--sun); outline-offset: 3px; }
+
+.idcard-data { display: grid; gap: 16px; padding: 20px; border: var(--border-w) solid var(--line); border-radius: var(--radius-l); background: var(--surface); }
+.idcard-data__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.idcard-data__title { font-size: var(--fs-h3); }
+.idcard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0; }
+.idcard-grid__item { display: grid; gap: 2px; padding: 10px 12px; border-radius: var(--radius-m); background: var(--bg); }
+.idcard-grid__item dt { color: var(--muted); font-size: var(--fs-small); }
+.idcard-grid__item dd { margin: 0; font-weight: 700; }
+.idcard-grid__item.is-review, .idcard-review { outline: 3px solid var(--sun); outline-offset: -3px; }
+.idcard-grid__flag { font-size: var(--fs-small); font-weight: 700; }
+.idcard-grid__flag::before { content: '⚠ '; }
+.idcard-help { display: grid; gap: 8px; padding: 16px 20px; border-radius: var(--radius-l); background: var(--brand-soft); }
+.idcard-help__title { font-size: var(--fs-h3); }
+.idcard-help ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.idcard-help a { color: var(--brand); font-weight: 700; }
+
+/* ---------- Paso 2: código del celular ---------- */
+.phone-code { display: grid; gap: 12px; padding: 20px; border: var(--border-w) solid var(--brand); border-radius: var(--radius-l); background: var(--brand-soft); }
+.phone-code__title { font-size: var(--fs-h3); }
+
+/* ---------- Cámara del carnet (pantalla completa) ---------- */
+.camera { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto auto; background: #000; color: #fff; }
+.camera__top { display: flex; align-items: center; gap: 12px; padding: 8px 16px; }
+.camera__back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: #fff; font-weight: 700; text-decoration: none; }
+.camera__title { font-size: var(--fs-lead); color: #fff; }
+.camera__stage { position: relative; display: grid; place-items: center; overflow: hidden; min-height: 50dvh; }
+.camera__video { width: 100%; height: 100%; object-fit: contain; }
+.camera__guide { position: absolute; width: min(86%, 560px); aspect-ratio: 85.6 / 54; border: 4px dashed #ffffffcc; border-radius: 16px; box-shadow: 0 0 0 100vmax #00000080; display: grid; place-items: center; }
+.camera__guide.is-ready { border-style: solid; border-color: var(--sun); color: var(--sun); }
+.camera__status { padding: 12px 16px; text-align: center; font-weight: 700; font-size: var(--fs-lead); }
+.camera__actions { display: grid; gap: 12px; padding: 0 16px 24px; max-width: 560px; width: 100%; margin: 0 auto; }
+.camera__file { color: var(--sun); font-weight: 700; text-align: center; text-decoration: underline; cursor: pointer; min-height: 44px; display: grid; place-items: center; }
+.camera .sr-only:focus-visible + .camera__file { outline: var(--focus-w) solid var(--sun); outline-offset: 3px; }
+.camera__tip { color: #ffffffcc; font-size: var(--fs-small); text-align: center; }
