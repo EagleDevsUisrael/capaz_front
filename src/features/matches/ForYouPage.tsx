@@ -62,7 +62,7 @@ function aiCacheKey(profile: Profile | null, recommended: MatchItem[]) {
   return (hash >>> 0).toString(16)
 }
 
-function AiAdvice({ cacheKey }: { cacheKey: string }) {
+function useAiAdvice(cacheKey: string) {
   const queryClient = useQueryClient()
   const [refreshing, setRefreshing] = useState(false)
 
@@ -85,37 +85,7 @@ function AiAdvice({ cacheKey }: { cacheKey: string }) {
     }
   }
 
-  if (q.isError || (q.data && !q.data.summary)) return null
-  return (
-    <section aria-labelledby="foryou-ai" className="foryou__ai" aria-busy={q.isPending}>
-      <div className="foryou__ai-head">
-        <h2 id="foryou-ai">
-          <span aria-hidden="true">✨ </span>Recomendaciones de IA
-        </h2>
-        <button type="button" className="foryou__ai-refresh" onClick={() => void refresh()} disabled={q.isFetching || refreshing}>
-          {q.isFetching || refreshing ? 'Analizando…' : 'Volver a consultar IA'}
-        </button>
-      </div>
-      {q.isPending ? (
-        <p className="foryou__small" role="status">
-          Analizando tus ajustes y experiencia laboral…
-        </p>
-      ) : (
-        <>
-          <p className="foryou__ai-summary">La IA te recomendó estas ofertas de acuerdo con tus ajustes y experiencia laboral.</p>
-          {q.data.tip && (
-            <p className="foryou__ai-tip">
-              <strong>Consejo:</strong> {q.data.tip}
-            </p>
-          )}
-          <p className="foryou__small">Sugerencias hechas con IA. Revisa cada oferta antes de postular.</p>
-          <p className="foryou__small foryou__ai-source" aria-live="polite">
-            Fuente: {q.data.source === 'redis' ? 'cache Redis' : q.data.source === 'mock' ? 'modo simulado' : 'IA (Ollama)'}
-          </p>
-        </>
-      )}
-    </section>
-  )
+  return { q, refresh, refreshing }
 }
 
 export function ForYouPage() {
@@ -182,6 +152,7 @@ function ForYou() {
 
 function Results({ data, profile }: { data: MatchesResponse; profile: Profile | null }) {
   const { counts, recommended, firstApplication } = data
+  const ai = useAiAdvice(aiCacheKey(profile, recommended))
   return (
     <>
       <p className="foryou__lead">
@@ -205,16 +176,27 @@ function Results({ data, profile }: { data: MatchesResponse; profile: Profile | 
         </section>
       )}
 
-      {recommended.length > 0 && <AiAdvice cacheKey={aiCacheKey(profile, recommended)} />}
-
       <section aria-labelledby="foryou-rec">
-        <h2 id="foryou-rec">Recomendados para ti</h2>
+        <div className="foryou__section-head">
+          <h2 id="foryou-rec">Recomendados para ti</h2>
+          {recommended.length > 0 && (
+            <button
+              type="button"
+              className="foryou__ai-refresh"
+              onClick={() => void ai.refresh()}
+              disabled={ai.q.isFetching || ai.refreshing}
+            >
+              {ai.q.isFetching || ai.refreshing ? 'Analizando…' : '✨ Reconsultar IA'}
+            </button>
+          )}
+        </div>
+        {ai.q.isPending && <p className="foryou__small foryou__ai-loading" role="status">Analizando tus ajustes y experiencia laboral…</p>}
         {recommended.length === 0 ? (
           <p className="foryou__state">
             No hay recomendaciones nuevas. Revisa todas las ofertas: hay {counts.totalJobs} publicadas.
           </p>
         ) : (
-          <RecommendedCarousel items={recommended} />
+          <RecommendedCarousel items={recommended} aiItems={ai.q.data?.items ?? []} />
         )}
       </section>
       {data.others.length > 0 && (
@@ -227,7 +209,7 @@ function Results({ data, profile }: { data: MatchesResponse; profile: Profile | 
   )
 }
 
-function RecommendedCarousel({ items }: { items: MatchItem[] }) {
+function RecommendedCarousel({ items, aiItems }: { items: MatchItem[]; aiItems: AiAdviceResponse['items'] }) {
   const [index, setIndex] = useState(0)
   useEffect(() => setIndex((current) => Math.min(current, Math.max(0, items.length - 1))), [items.length])
   const move = (delta: number) => setIndex((current) => (current + delta + items.length) % items.length)
@@ -236,7 +218,7 @@ function RecommendedCarousel({ items }: { items: MatchItem[] }) {
   return (
     <div className="foryou__carousel" aria-roledescription="carrusel" aria-label="Trabajos recomendados">
       <div className="foryou__carousel-card" aria-live="polite">
-        <MatchCard item={current} />
+        <MatchCard item={current} aiWhy={aiItems.find((item) => item.jobId === current.job.id)?.why} />
       </div>
       <div className="foryou__carousel-controls">
         <button type="button" className="foryou__btn foryou__btn--secondary" onClick={() => move(-1)} aria-label="Trabajo recomendado anterior">
@@ -251,11 +233,11 @@ function RecommendedCarousel({ items }: { items: MatchItem[] }) {
   )
 }
 
-function MatchCard({ item }: { item: { job: Job; match: Match; applicationId?: string | null } }) {
+function MatchCard({ item, aiWhy }: { item: { job: Job; match: Match; applicationId?: string | null }; aiWhy?: string }) {
   const { job, match } = item
   const titleId = `job-${job.id}`
   return (
-    <article className="foryou__card" aria-labelledby={titleId}>
+    <article className={`foryou__card${aiWhy ? ' foryou__card--ai' : ''}`} aria-labelledby={titleId}>
       <div className="foryou__cardhead">
         <div>
           <h3 id={titleId}>
@@ -269,7 +251,14 @@ function MatchCard({ item }: { item: { job: Job; match: Match; applicationId?: s
           <span>{match.score}%</span> compatible
         </p>
       </div>
+      {aiWhy && <p className="foryou__ai-badge"><span aria-hidden="true">✨</span> Recomendación de IA</p>}
       {item.applicationId && <p className="foryou__badge">Ya postulaste</p>}
+      {aiWhy && (
+        <div className="foryou__ai-reason">
+          <h4>Por qué te lo recomienda la IA</h4>
+          <p>{aiWhy}</p>
+        </div>
+      )}
       {match.reasons.length > 0 && (
         <>
           <h4>Por qué encaja contigo</h4>
