@@ -1,0 +1,722 @@
+[
+ {
+  "id": "job-1",
+  "title": "Agente de atención telefónica",
+  "company": "Banco del Litoral",
+  "city": "Guayaquil",
+  "province": "Guayas",
+  "modality": "remote",
+  "workday": "fullTime",
+  "salary": 520,
+  "postedDaysAgo": 2,
+  "hoursPerDay": 8,
+  "icon": "headset",
+  "summary": "Atiendes llamadas de clientes desde tu casa. Te damos computadora con lector de pantalla y auriculares.",
+  "tasks": "Atenderás llamadas de clientes para resolver dudas sobre tarjetas y cuentas, y registrarás cada caso en el sistema. Lunes a viernes, 8 horas.",
+  "offered": [
+   "Computadora con lector de pantalla JAWS y NVDA",
+   "Auriculares con cancelación de ruido",
+   "Capacitación de 2 semanas con material accesible",
+   "Pausas activas cada 2 horas"
+  ],
+  "requirements": [
+   "Bachillerato completo",
+   "Buena comunicación oral",
+   "No necesitas experiencia: te capacitamos"
+  ],
+  "benefits": "$520 al mes, beneficios de ley, IESS desde el primer día y bono de internet de $25.",
+  "accommodationsOffered": [
+   "screenReader",
+   "seated",
+   "adaptedKeyboard"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "visual",
+   "psychosocial"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "phoneSpeaking",
+   "hearing",
+   "bothHands"
+  ],
+  "keywords": [
+   "atención al cliente",
+   "llamadas",
+   "call center",
+   "servicio al cliente"
+  ],
+  "easyReadSummary": {
+   "title": "Trabajo: atender llamadas",
+   "company": "Empresa: Banco del Litoral",
+   "sections": [
+    {
+     "heading": "¿Qué harás?",
+     "lines": [
+      {
+       "icon": "phone",
+       "text": "Contestas llamadas de clientes."
+      },
+      {
+       "icon": "help",
+       "text": "Ayudas con sus dudas."
+      }
+     ]
+    },
+    {
+     "heading": "¿Dónde y cuándo?",
+     "lines": [
+      {
+       "icon": "home",
+       "text": "Trabajas desde tu casa."
+      },
+      {
+       "icon": "calendar",
+       "text": "De lunes a viernes."
+      },
+      {
+       "icon": "clock",
+       "text": "8 horas cada día."
+      }
+     ]
+    },
+    {
+     "heading": "¿Cuánto ganas?",
+     "lines": [
+      {
+       "icon": "money",
+       "text": "520 dólares cada mes."
+      }
+     ]
+    },
+    {
+     "heading": "¿Qué te dan?",
+     "lines": [
+      {
+       "icon": "computer",
+       "text": "Una computadora que lee en voz alta."
+      },
+      {
+       "icon": "school",
+       "text": "Te enseñamos todo. No necesitas experiencia."
+      }
+     ]
+    },
+    {
+     "heading": "¿Qué necesitas?",
+     "lines": [
+      {
+       "icon": "check",
+       "text": "Haber terminado el colegio."
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "job-2",
+  "title": "Analista de datos junior",
+  "company": "Andes Tech",
+  "city": "Quito",
+  "province": "Pichincha",
+  "modality": "hybrid",
+  "workday": "fullTime",
+  "salary": 800,
+  "postedDaysAgo": 3,
+  "hoursPerDay": 8,
+  "icon": "chart",
+  "summary": "Preparas reportes en Excel y Power BI. Oficina con rampa, ascensor y baño accesible.",
+  "tasks": "Prepararás reportes semanales en Excel y Power BI y apoyarás al equipo con la limpieza de datos. Dos días a la semana en la oficina y tres desde casa.",
+  "offered": [
+   "Oficina con rampa, ascensor y baño accesible",
+   "Escritorio regulable en altura",
+   "Teclado y mouse adaptados",
+   "Horario flexible de entrada"
+  ],
+  "requirements": [
+   "Estudios técnicos o universitarios en curso",
+   "Excel intermedio",
+   "Ganas de aprender Power BI"
+  ],
+  "benefits": "$800 al mes, beneficios de ley, IESS desde el primer día y seguro médico privado.",
+  "accommodationsOffered": [
+   "ramp",
+   "seated",
+   "adaptedKeyboard",
+   "flexibleSchedule"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "hearing"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "excel",
+   "power bi",
+   "datos",
+   "reportes",
+   "análisis"
+  ]
+ },
+ {
+  "id": "job-3",
+  "title": "Transcriptor de audio",
+  "company": "Archivo Nacional",
+  "city": "Todo el país",
+  "province": "Nacional",
+  "modality": "remote",
+  "workday": "partTime",
+  "salary": 500,
+  "postedDaysAgo": 5,
+  "hoursPerDay": 4,
+  "icon": "audio",
+  "summary": "Escuchas grabaciones históricas y las pasas a texto. Trabajas a tu ritmo con metas semanales.",
+  "tasks": "Escucharás grabaciones históricas y las pasarás a texto. Trabajas a tu ritmo, con metas semanales y revisión de un coordinador.",
+  "offered": [
+   "Trabajo 100 % desde casa",
+   "Metas semanales, no diarias",
+   "Software de transcripción con atajos de teclado"
+  ],
+  "requirements": [
+   "Bachillerato completo",
+   "Buena ortografía",
+   "Computadora con internet"
+  ],
+  "benefits": "$500 al mes por media jornada y beneficios de ley.",
+  "accommodationsOffered": [
+   "flexibleSchedule",
+   "seated",
+   "screenReader"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "visual",
+   "psychosocial"
+  ],
+  "physicalDemands": [
+   "hearing",
+   "bothHands"
+  ],
+  "keywords": [
+   "transcripción",
+   "audio",
+   "redacción",
+   "digitación"
+  ]
+ },
+ {
+  "id": "job-4",
+  "title": "Moderador de contenido",
+  "company": "Pacífico Media",
+  "city": "Manta",
+  "province": "Manabí",
+  "modality": "remote",
+  "workday": "fullTime",
+  "salary": 560,
+  "postedDaysAgo": 6,
+  "hoursPerDay": 8,
+  "icon": "shield",
+  "summary": "Revisas publicaciones en redes sociales. Equipo con intérprete de lengua de señas en reuniones.",
+  "tasks": "Revisarás publicaciones en redes sociales según las normas de la comunidad y reportarás casos al equipo. Las reuniones tienen intérprete de lengua de señas.",
+  "offered": [
+   "Intérprete de lengua de señas en reuniones",
+   "Chat interno para todas las coordinaciones",
+   "Pantalla grande de 27 pulgadas"
+  ],
+  "requirements": [
+   "Bachillerato completo",
+   "Buena lectura y criterio",
+   "Manejo básico de redes sociales"
+  ],
+  "benefits": "$560 al mes, beneficios de ley e IESS desde el primer día.",
+  "accommodationsOffered": [
+   "signLanguage",
+   "seated"
+  ],
+  "compatibleDisabilities": [
+   "hearing",
+   "physical"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "redes sociales",
+   "moderación",
+   "contenido",
+   "comunicación"
+  ]
+ },
+ {
+  "id": "job-5",
+  "title": "Auxiliar administrativo",
+  "company": "Municipio de Cuenca",
+  "city": "Cuenca",
+  "province": "Azuay",
+  "modality": "onsite",
+  "workday": "fullTime",
+  "salary": 520,
+  "postedDaysAgo": 7,
+  "hoursPerDay": 8,
+  "icon": "briefcase",
+  "summary": "Apoyas con archivo, atención en ventanilla y llamadas. Edificio con rampa y ascensor.",
+  "tasks": "Apoyarás con el archivo de documentos, la atención en ventanilla y las llamadas del área. Un compañero te acompaña las primeras semanas.",
+  "offered": [
+   "Edificio con rampa y ascensor",
+   "Puesto de trabajo en planta baja",
+   "Compañero guía las primeras semanas"
+  ],
+  "requirements": [
+   "Bachillerato completo",
+   "Trato amable",
+   "Manejo básico de computadora"
+  ],
+  "benefits": "$520 al mes, beneficios de ley e IESS desde el primer día.",
+  "accommodationsOffered": [
+   "ramp",
+   "seated"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "hearing",
+   "intellectual"
+  ],
+  "physicalDemands": [
+   "bothHands",
+   "phoneSpeaking"
+  ],
+  "keywords": [
+   "administrativo",
+   "archivo",
+   "atención",
+   "oficina"
+  ]
+ },
+ {
+  "id": "job-6",
+  "title": "Digitador",
+  "company": "Seguros del Pacífico",
+  "city": "Guayaquil",
+  "province": "Guayas",
+  "modality": "hybrid",
+  "workday": "partTime",
+  "salary": 470,
+  "postedDaysAgo": 8,
+  "hoursPerDay": 4,
+  "icon": "monitor",
+  "summary": "Ingresas datos de pólizas al sistema. Medio tiempo, horario de mañana, dos días desde casa.",
+  "tasks": "Ingresarás datos de pólizas y formularios al sistema, verificando que estén completos. Medio tiempo en la mañana.",
+  "offered": [
+   "Rampa y baño accesible",
+   "Teclado adaptado y lector de pantalla",
+   "Dos días desde casa"
+  ],
+  "requirements": [
+   "Bachillerato en curso o completo",
+   "Rapidez al digitar",
+   "Atención al detalle"
+  ],
+  "benefits": "$470 al mes por media jornada, beneficios de ley e IESS.",
+  "accommodationsOffered": [
+   "ramp",
+   "adaptedKeyboard",
+   "screenReader",
+   "seated"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "visual",
+   "hearing"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "digitación",
+   "datos",
+   "ingreso de datos",
+   "oficina"
+  ]
+ },
+ {
+  "id": "job-7",
+  "title": "Asistente de bodega",
+  "company": "Distribuidora Andina",
+  "city": "Ambato",
+  "province": "Tungurahua",
+  "modality": "onsite",
+  "workday": "fullTime",
+  "salary": 470,
+  "postedDaysAgo": 9,
+  "hoursPerDay": 8,
+  "icon": "briefcase",
+  "summary": "Ordenas y etiquetas productos. Instrucciones con imágenes y un supervisor que te acompaña.",
+  "tasks": "Ordenarás y etiquetarás productos en la bodega. Las instrucciones vienen con imágenes y un supervisor te acompaña en cada tarea.",
+  "offered": [
+   "Instrucciones con imágenes paso a paso",
+   "Supervisor de apoyo",
+   "Bodega en planta baja, sin gradas"
+  ],
+  "requirements": [
+   "Ganas de trabajar en equipo",
+   "Puntualidad",
+   "No se necesita experiencia"
+  ],
+  "benefits": "$470 al mes, beneficios de ley e IESS desde el primer día.",
+  "accommodationsOffered": [
+   "ramp"
+  ],
+  "compatibleDisabilities": [
+   "hearing",
+   "intellectual",
+   "physical"
+  ],
+  "physicalDemands": [
+   "standing",
+   "bothHands",
+   "walkingDriving"
+  ],
+  "keywords": [
+   "bodega",
+   "logística",
+   "etiquetado",
+   "almacén"
+  ]
+ },
+ {
+  "id": "job-8",
+  "title": "Diseñador gráfico junior",
+  "company": "Estudio Nube",
+  "city": "Loja",
+  "province": "Loja",
+  "modality": "remote",
+  "workday": "fullTime",
+  "salary": 650,
+  "postedDaysAgo": 10,
+  "hoursPerDay": 8,
+  "icon": "monitor",
+  "summary": "Diseñas publicaciones y piezas para redes. Trabajo remoto con horario flexible.",
+  "tasks": "Diseñarás publicaciones, afiches y piezas para redes sociales de nuestros clientes. Trabajo remoto con horario flexible y revisiones semanales.",
+  "offered": [
+   "Trabajo remoto",
+   "Horario flexible",
+   "Licencias de software de diseño"
+  ],
+  "requirements": [
+   "Portafolio básico",
+   "Manejo de Canva o Photoshop",
+   "Creatividad"
+  ],
+  "benefits": "$650 al mes, beneficios de ley y licencias de software incluidas.",
+  "accommodationsOffered": [
+   "flexibleSchedule",
+   "seated"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "hearing"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "diseño",
+   "gráfico",
+   "canva",
+   "photoshop",
+   "redes sociales"
+  ]
+ },
+ {
+  "id": "job-9",
+  "title": "Asesor de ventas en línea",
+  "company": "Tienda Verde",
+  "city": "Quito",
+  "province": "Pichincha",
+  "modality": "remote",
+  "workday": "partTime",
+  "salary": 480,
+  "postedDaysAgo": 11,
+  "hoursPerDay": 5,
+  "icon": "headset",
+  "summary": "Respondes mensajes de clientes y cierras ventas por chat. Más comisiones por cada venta.",
+  "tasks": "Responderás mensajes de clientes por chat y WhatsApp, recomendarás productos y cerrarás ventas. Ganas un sueldo base más comisiones.",
+  "offered": [
+   "Trabajo desde casa",
+   "Guiones de respuesta listos",
+   "Horario flexible por turnos"
+  ],
+  "requirements": [
+   "Buena redacción",
+   "Manejo de WhatsApp y redes",
+   "Actitud de servicio"
+  ],
+  "benefits": "$480 al mes más comisiones por ventas y beneficios de ley.",
+  "accommodationsOffered": [
+   "flexibleSchedule",
+   "seated",
+   "signLanguage"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "hearing",
+   "psychosocial"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "ventas",
+   "chat",
+   "whatsapp",
+   "atención al cliente",
+   "comercial"
+  ]
+ },
+ {
+  "id": "job-10",
+  "title": "Recepcionista",
+  "company": "Hotel Mirador",
+  "city": "Baños",
+  "province": "Tungurahua",
+  "modality": "onsite",
+  "workday": "fullTime",
+  "salary": 520,
+  "postedDaysAgo": 12,
+  "hoursPerDay": 8,
+  "icon": "briefcase",
+  "summary": "Recibes a los huéspedes y manejas reservas. Recepción con rampa y equipo que conoce lengua de señas básica.",
+  "tasks": "Recibirás a los huéspedes, manejarás reservas en el sistema y resolverás consultas. El equipo conoce lengua de señas básica.",
+  "offered": [
+   "Recepción con rampa de acceso",
+   "Equipo con lengua de señas básica",
+   "Silla ergonómica y turnos rotativos conversados"
+  ],
+  "requirements": [
+   "Bachillerato completo",
+   "Trato amable",
+   "Inglés básico (deseable)"
+  ],
+  "benefits": "$520 al mes, beneficios de ley, propinas compartidas e IESS.",
+  "accommodationsOffered": [
+   "ramp",
+   "signLanguage",
+   "seated"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "hearing"
+  ],
+  "physicalDemands": [
+   "phoneSpeaking",
+   "bothHands"
+  ],
+  "keywords": [
+   "recepción",
+   "hotel",
+   "atención al cliente",
+   "turismo"
+  ]
+ },
+ {
+  "id": "job-11",
+  "title": "Pasante de contabilidad",
+  "company": "Contadores Asociados",
+  "city": "Guayaquil",
+  "province": "Guayas",
+  "modality": "hybrid",
+  "workday": "internship",
+  "salary": 470,
+  "postedDaysAgo": 13,
+  "hoursPerDay": 6,
+  "icon": "chart",
+  "summary": "Apoyas con facturas y conciliaciones. Aprendes con un contador que te guía.",
+  "tasks": "Apoyarás con el registro de facturas y conciliaciones bancarias. Un contador senior te guía y revisa tu trabajo cada semana.",
+  "offered": [
+   "Tutor asignado",
+   "Oficina con rampa",
+   "Opción de trabajar dos días desde casa"
+  ],
+  "requirements": [
+   "Estudiante de contabilidad o carrera afín",
+   "Excel básico",
+   "Ganas de aprender"
+  ],
+  "benefits": "$470 al mes de pasantía, con opción de contrato al terminar.",
+  "accommodationsOffered": [
+   "ramp",
+   "seated",
+   "flexibleSchedule"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "hearing",
+   "psychosocial"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "contabilidad",
+   "excel",
+   "facturas",
+   "pasantía",
+   "finanzas"
+  ]
+ },
+ {
+  "id": "job-12",
+  "title": "Programador web junior",
+  "company": "Andes Tech",
+  "city": "Quito",
+  "province": "Pichincha",
+  "modality": "remote",
+  "workday": "fullTime",
+  "salary": 950,
+  "postedDaysAgo": 14,
+  "hoursPerDay": 8,
+  "icon": "monitor",
+  "summary": "Desarrollas pantallas web accesibles con React. Equipo remoto, reuniones con subtítulos.",
+  "tasks": "Desarrollarás pantallas web accesibles con React y TypeScript junto a un equipo remoto. Las reuniones tienen subtítulos en vivo y notas escritas.",
+  "offered": [
+   "Reuniones con subtítulos en vivo",
+   "Horario flexible",
+   "Equipo de trabajo adaptado a tu setup"
+  ],
+  "requirements": [
+   "Conocimientos de HTML, CSS y JavaScript",
+   "Inglés técnico para leer",
+   "Ganas de aprender React"
+  ],
+  "benefits": "$950 al mes, beneficios de ley, IESS desde el primer día y presupuesto anual de formación.",
+  "accommodationsOffered": [
+   "flexibleSchedule",
+   "screenReader",
+   "adaptedKeyboard",
+   "seated"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "visual",
+   "hearing",
+   "psychosocial"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "programación",
+   "react",
+   "javascript",
+   "desarrollo",
+   "web",
+   "typescript"
+  ]
+ },
+ {
+  "id": "job-13",
+  "title": "Operador de ingreso de datos",
+  "company": "Cooperativa Camino",
+  "city": "Riobamba",
+  "province": "Chimborazo",
+  "modality": "onsite",
+  "workday": "fullTime",
+  "salary": 520,
+  "postedDaysAgo": 15,
+  "hoursPerDay": 8,
+  "icon": "monitor",
+  "summary": "Registras información de socios en el sistema. Oficina accesible con lector de pantalla.",
+  "tasks": "Registrarás información de socios y créditos en el sistema, verificando cada dato. Oficina en planta baja con equipos accesibles.",
+  "offered": [
+   "Oficina en planta baja con rampa",
+   "Computadora con lector de pantalla",
+   "Capacitación inicial con material accesible"
+  ],
+  "requirements": [
+   "Bachillerato completo",
+   "Atención al detalle",
+   "Manejo básico de computadora"
+  ],
+  "benefits": "$520 al mes, beneficios de ley e IESS desde el primer día.",
+  "accommodationsOffered": [
+   "ramp",
+   "screenReader",
+   "seated",
+   "adaptedKeyboard"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "visual",
+   "hearing"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "bothHands"
+  ],
+  "keywords": [
+   "digitación",
+   "datos",
+   "cooperativa",
+   "oficina"
+  ]
+ },
+ {
+  "id": "job-14",
+  "title": "Tutor de apoyo escolar en línea",
+  "company": "Escuela Abierta",
+  "city": "Todo el país",
+  "province": "Nacional",
+  "modality": "remote",
+  "workday": "partTime",
+  "salary": 600,
+  "postedDaysAgo": 16,
+  "hoursPerDay": 4,
+  "icon": "home",
+  "summary": "Das clases de refuerzo por videollamada a niños de primaria. Tú eliges tus horarios.",
+  "tasks": "Darás clases de refuerzo en matemáticas y lectura por videollamada a niños de primaria. Tú eliges los horarios dentro de la tarde.",
+  "offered": [
+   "Tú eliges tus horarios",
+   "Material de clase ya preparado",
+   "Apoyo de una coordinadora pedagógica"
+  ],
+  "requirements": [
+   "Bachillerato completo o más",
+   "Paciencia",
+   "Buena comunicación"
+  ],
+  "benefits": "$600 al mes por media jornada y beneficios de ley.",
+  "accommodationsOffered": [
+   "flexibleSchedule",
+   "seated",
+   "signLanguage"
+  ],
+  "compatibleDisabilities": [
+   "physical",
+   "hearing",
+   "psychosocial"
+  ],
+  "physicalDemands": [
+   "seeScreen",
+   "phoneSpeaking",
+   "hearing"
+  ],
+  "keywords": [
+   "educación",
+   "clases",
+   "tutoría",
+   "niños",
+   "enseñanza"
+  ]
+ }
+]
