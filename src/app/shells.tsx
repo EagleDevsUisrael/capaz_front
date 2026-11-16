@@ -1,5 +1,6 @@
 ﻿import { Outlet } from 'react-router'
 import { AccessibilityBar } from '@/features/accessibility/AccessibilityBar'
+import { MobileReadScreenPrompt } from '@/features/accessibility/MobileReadScreenPrompt'
 import { SkipLink } from '@/shared/ui'
 import { AppHeader } from './AppHeader'
 import { TabBar } from './TabBar'
@@ -9,6 +10,7 @@ export function PublicShell() {
   return (
     <>
       <SkipLink />
+      <MobileReadScreenPrompt />
       <AccessibilityBar />
       <AppHeader />
       <main id="main" tabIndex={-1} className="public-main">

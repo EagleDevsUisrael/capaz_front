@@ -21,6 +21,8 @@ export interface A11yState {
   mic: boolean
   /** Velocidad de la voz: 0,8 / 1 / 1,25 */
   rate: SpeechRate
+  /** Ya se respondió la pregunta inicial de Leer pantalla en este dispositivo. */
+  readerPromptSeen: boolean
 }
 
 interface A11yActions {
@@ -30,6 +32,7 @@ interface A11yActions {
   setEasyRead: (on: boolean) => void
   setMic: (on: boolean) => void
   setRate: (rate: SpeechRate) => void
+  setReaderPromptSeen: (seen: boolean) => void
   reset: () => void
 }
 
@@ -40,6 +43,7 @@ const defaults: A11yState = {
   easyRead: false,
   mic: true,
   rate: 1,
+  readerPromptSeen: false,
 }
 
 /** Preferencias de accesibilidad guardadas en el dispositivo (zustand + persist → localStorage). */
@@ -53,6 +57,7 @@ export const useA11yPrefs = create<A11yState & A11yActions>()(
       setEasyRead: (easyRead) => set({ easyRead }),
       setMic: (mic) => set({ mic }),
       setRate: (rate) => set({ rate }),
+      setReaderPromptSeen: (readerPromptSeen) => set({ readerPromptSeen }),
       reset: () => set(defaults),
     }),
     {
@@ -65,6 +70,7 @@ export const useA11yPrefs = create<A11yState & A11yActions>()(
         easyRead: s.easyRead,
         mic: s.mic,
         rate: s.rate,
+        readerPromptSeen: s.readerPromptSeen,
       }),
     },
   ),
@@ -72,7 +78,7 @@ export const useA11yPrefs = create<A11yState & A11yActions>()(
 
 /** Refleja las preferencias en los atributos de <html> que usan los tokens CSS. */
 export function applyPrefsToDocument(
-  s: Pick<A11yState, 'vision' | 'fontLarge' | 'easyRead'>,
+  s: Pick<A11yState, 'vision' | 'fontLarge' | 'easyRead' | 'readScreen'>,
   el: HTMLElement = document.documentElement,
 ) {
   const set = (name: string, value: string | null) =>
@@ -80,5 +86,6 @@ export function applyPrefsToDocument(
 
   set('data-vision', s.vision === 'normal' ? null : s.vision)
   set('data-font', s.fontLarge ? 'large' : null)
-  set('data-reading', s.easyRead ? 'easy' : null)
+  set('data-reading', s.easyRead || s.readScreen ? 'easy' : null)
+  set('data-reader', s.readScreen ? 'active' : null)
 }

@@ -7,10 +7,11 @@ function A11yAttributes() {
   const vision = useA11yPrefs((s) => s.vision)
   const fontLarge = useA11yPrefs((s) => s.fontLarge)
   const easyRead = useA11yPrefs((s) => s.easyRead)
+  const readScreen = useA11yPrefs((s) => s.readScreen)
 
   useEffect(() => {
-    applyPrefsToDocument({ vision, fontLarge, easyRead })
-  }, [vision, fontLarge, easyRead])
+    applyPrefsToDocument({ vision, fontLarge, easyRead, readScreen })
+  }, [vision, fontLarge, easyRead, readScreen])
 
   return null
 }

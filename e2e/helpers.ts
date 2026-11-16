@@ -1,6 +1,12 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
+/** Responde la pregunta inicial en pruebas que no están validando ese diálogo. */
+export async function dismissMobileReadScreenPrompt(page: Page) {
+  const button = page.getByRole('button', { name: 'Desactivar Leer pantalla', exact: true })
+  if (await button.isVisible().catch(() => false)) await button.click()
+}
+
 let counter = 0
 const rand = (n: number) => Math.floor(Math.random() * n)
 

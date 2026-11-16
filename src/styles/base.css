@@ -91,6 +91,23 @@ h1:focus {
   border-radius: var(--radius-s);
 }
 
+/* Contenido decorativo que añade ruido cuando la lectura automática está activa. */
+:root[data-reader='active'] .hero__ods,
+:root[data-reader='active'] .hero__hint,
+:root[data-reader='active'] .jobs-body__sort,
+:root[data-reader='active'] .signup__step-desc,
+:root[data-reader='active'] .step__note {
+  display: none;
+}
+
+:root[data-reader='active'] .ui-button,
+:root[data-reader='active'] button,
+:root[data-reader='active'] input,
+:root[data-reader='active'] textarea,
+:root[data-reader='active'] select {
+  border-width: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

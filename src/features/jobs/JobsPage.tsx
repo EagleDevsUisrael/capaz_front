@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { useSession } from '@/features/auth/useSession'
+import { useA11yPrefs } from '@/features/accessibility/useA11yPrefs'
 import { Button } from '@/shared/ui'
 import { CloseIcon, SlidersIcon } from '@/shared/ui/icons'
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
@@ -24,6 +25,7 @@ const plural = (n: number, one: string, many: string) => `${n.toLocaleString('es
  */
 export function JobsPage() {
   const signedIn = useSession((s) => s.signedIn)
+  const readScreen = useA11yPrefs((s) => s.readScreen)
   const { filters, setFilters, clear, activeCount, hasAny } = useJobFilters()
   const { data, isPending, isError, refetch, isFetching } = useJobs(filters, signedIn ? 'compatibility' : 'recent')
   const stats = useStats().data
@@ -65,26 +67,27 @@ export function JobsPage() {
           <div className="hero__grid">
             <div>
               <h1 id="hero-title" className="hero__title">
-                Encuentra un trabajo que se adapta a ti
+                {readScreen ? 'Busca un trabajo para ti' : 'Encuentra un trabajo que se adapta a ti'}
               </h1>
               <p className="hero__lead">
-                Ofertas de empleo en Ecuador para personas con discapacidad. Registras tu carnet una sola vez y te
-                mostramos los puestos donde mejor encajas, con los ajustes que cada empresa ya ofrece.
+                {readScreen
+                  ? 'Busca ofertas accesibles. Crea tu perfil para encontrar las mejores para ti.'
+                  : 'Ofertas de empleo en Ecuador para personas con discapacidad. Registras tu carnet una sola vez y te mostramos los puestos donde mejor encajas, con los ajustes que cada empresa ya ofrece.'}
               </p>
             </div>
             {stats && (
-              <ul className="hero__stats" aria-label="Capaz en cifras">
+              <ul className="hero__stats" aria-label="Capaz en cifras" data-read-aloud>
                 <li>
                   <strong>{stats.activeJobs.toLocaleString('es-EC')}</strong>
                   <span>ofertas inclusivas activas</span>
                 </li>
                 <li>
                   <strong>{stats.provinces}</strong>
-                  <span>provincias</span>
+                  <span>{stats.provinces === 1 ? 'provincia con ofertas activas' : 'provincias con ofertas activas'}</span>
                 </li>
                 <li>
                   <strong>{LEGAL_QUOTA} %</strong>
-                  <span>cuota legal de contratación</span>
+                  <span>cuota legal para empresas con 25 o más trabajadores</span>
                 </li>
               </ul>
             )}
@@ -150,8 +153,10 @@ export function JobsPage() {
             ) : (
               <>
                 <p>
-                  <strong>¿Quieres ver dónde mejor encajas?</strong> Registra tu carnet una sola vez y ordenamos las
-                  ofertas por compatibilidad. Para postular también necesitas tu perfil.
+                  <strong>{readScreen ? 'Crea tu perfil.' : '¿Quieres ver dónde mejor encajas?'}</strong>{' '}
+                  {readScreen
+                    ? 'Validamos tu cédula y te mostramos trabajos para ti.'
+                    : 'Registra tu carnet una sola vez y ordenamos las ofertas por compatibilidad. Para postular también necesitas tu perfil.'}
                 </p>
                 <div className="invite__actions">
                   <Link to="/signup/id-card" className="ui-button ui-button--primary">

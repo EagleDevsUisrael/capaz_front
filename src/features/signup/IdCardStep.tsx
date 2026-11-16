@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router'
 import { ApiError, errorMessage } from '@/shared/api/client'
 import { useCatalog } from '@/shared/api/catalog'
 import type { DisabilityType } from '@/shared/api/types'
-import { Button, ChipGroup, Field } from '@/shared/ui'
+import { Button, ChipGroup } from '@/shared/ui'
 import { ArrowRightIcon, CheckIcon } from '@/shared/ui/icons'
+import { VoiceField } from '@/shared/voice/VoiceField'
 import { isValidCedula, scanIdCard } from './api'
 import { focusFirstInvalid } from './ContactStep'
 import { SIDE_LABEL, useIdCardPhotos, type Side } from './idCardPhotos'
@@ -28,20 +29,20 @@ type Errors = Partial<Record<IdCardField, string>>
 
 function validate(d: IdCardData): Errors {
   const e: Errors = {}
-  if (d.fullName.trim().length < 3) e.fullName = 'Escribe tu nombre como aparece en el carnet'
+  if (d.fullName.trim().length < 3) e.fullName = 'Corrige el nombre como aparece en el documento'
   if (!isValidCedula(d.idNumber)) e.idNumber = 'La cédula no es válida. Revisa los 10 dígitos.'
-  if (d.birthDate && !isIsoDate(d.birthDate)) e.birthDate = 'Escribe la fecha así: 12/03/1985'
+  if (d.birthDate && !isIsoDate(d.birthDate)) e.birthDate = 'Corrige la fecha así: 12/03/1985'
   if (!d.disabilityType) e.disabilityType = 'Elige el tipo de discapacidad del carnet'
   if (!d.disabilityPercent || d.disabilityPercent < 1 || d.disabilityPercent > 100)
-    e.disabilityPercent = 'Escribe un porcentaje entre 1 y 100'
+    e.disabilityPercent = 'Corrige el porcentaje: debe estar entre 1 y 100'
   if (d.validity && d.validity !== 'indefinite' && !isIsoDate(d.validity))
-    e.validity = 'Escribe la fecha así: 12/03/2030, o “Indefinida”'
+    e.validity = 'Corrige la fecha así: 12/03/2030, o “Indefinida”'
   return e
 }
 
 /**
  * Paso 1: fotos del carnet (frente y reverso) → OCR del back → la persona revisa y confirma.
- * Si la lectura falla (IA no disponible, foto borrosa), puede escribir sus datos a mano.
+ * Si la lectura falla, se deben reemplazar las fotos. El formulario solo corrige datos ya extraídos.
  */
 export function IdCardStep() {
   const navigate = useNavigate()
@@ -58,7 +59,7 @@ export function IdCardStep() {
   const [scanning, setScanning] = useState(false)
   const [scanError, setScanError] = useState<string | null>(null)
   const [errors, setErrors] = useState<Errors>({})
-  const hasData = Boolean(saved.scanId) || editing
+  const hasValidatedScan = Boolean(saved.scanId)
   const set = <K extends keyof IdCardData>(k: K, v: IdCardData[K]) => setData((p) => ({ ...p, [k]: v }))
 
   const scan = async () => {
@@ -75,27 +76,39 @@ export function IdCardStep() {
         disabilityPercent: r.disabilityPercent,
         validity: r.validity ?? '',
       }
+      if (r.ocrFailed || !r.idNumberValid) {
+        setData(emptyIdCard)
+        setEditing(false)
+        saveIdCard({ scanId: null, scanExpiresAt: null, data: emptyIdCard, needsReview: [], confirmed: false })
+        setScanError('No pudimos validar el documento. Cambia las fotos y asegúrate de que el NUI o número de cédula se vea completo.')
+        return
+      }
       setData(next)
       saveIdCard({ scanId: r.scanId, scanExpiresAt: r.expiresAt, data: next, needsReview: r.needsReview, confirmed: false })
       setEditing(r.needsReview.length > 0)
       setStepError(null)
-      if (r.ocrFailed) {
-        setScanError('No pudimos leer tu carnet en este momento. Guardamos tus fotos: escribe tus datos abajo.')
-      }
     } catch (e) {
       const unavailable = e instanceof ApiError && (e.status === 503 || e.code === 'IA_UNAVAILABLE')
       setScanError(
         unavailable
-          ? 'No pudimos leer tu carnet en este momento. Escribe tus datos abajo; los revisaremos después.'
-          : `${errorMessage(e)} Puedes tomar las fotos otra vez o escribir tus datos.`,
+          ? 'El servicio de lectura no está disponible. Intenta de nuevo en un momento; necesitamos validar tu documento para continuar.'
+          : e instanceof ApiError && e.code === 'ID_CARD_UNREADABLE'
+            ? e.message
+            : `${errorMessage(e)} Cambia las fotos e inténtalo otra vez.`,
       )
-      setEditing(true)
+      setData(emptyIdCard)
+      setEditing(false)
+      saveIdCard({ scanId: null, scanExpiresAt: null, data: emptyIdCard, needsReview: [], confirmed: false })
     } finally {
       setScanning(false)
     }
   }
 
   const next = () => {
+    if (!saved.scanId) {
+      setScanError('Primero necesitamos validar las fotos de tu cédula o carnet.')
+      return
+    }
     const e = validate(data)
     setErrors(e)
     if (Object.keys(e).length) {
@@ -114,8 +127,8 @@ export function IdCardStep() {
   return (
     <StepFrame
       step={1}
-      title="Tu carnet"
-      lead="Toma una foto de tu carnet de discapacidad por los dos lados. Leemos tus datos para que no tengas que escribirlos."
+      title="Tu documento"
+      lead="Toma una foto de tu cédula actualizada o carnet de discapacidad por los dos lados. Debemos validarlo para continuar."
     >
       <div className="step">
         <div className="idcard-tiles">
@@ -138,11 +151,11 @@ export function IdCardStep() {
           </p>
         )}
 
-        {(hasData || scanError) && (
+        {hasValidatedScan && (
           <section className="idcard-data" aria-labelledby="idcard-data-title">
             <div className="idcard-data__head">
               <h2 id="idcard-data-title" className="idcard-data__title">
-                {saved.scanId && !scanError ? 'Leímos estos datos' : 'Escribe tus datos del carnet'}
+                Revisa los datos que leímos
               </h2>
               {saved.scanId && !editing && (
                 <Button variant="ghost" onPress={() => setEditing(true)}>
@@ -153,8 +166,9 @@ export function IdCardStep() {
 
             {editing ? (
               <div className="step__grid step__grid--2">
-                <Field label="Nombre" value={data.fullName} onChange={(v) => set('fullName', v)} autoComplete="name" error={errors.fullName} hint={review('fullName') ? 'Revisa este dato' : undefined} />
-                <Field
+                <VoiceField kind="name" label="Nombre" value={data.fullName} onChange={(v) => set('fullName', v)} autoComplete="name" error={errors.fullName} hint={review('fullName') ? 'Revisa este dato' : undefined} />
+                <VoiceField
+                  kind="idNumber"
                   label="Cédula"
                   inputMode="numeric"
                   value={data.idNumber}
@@ -162,7 +176,8 @@ export function IdCardStep() {
                   error={errors.idNumber}
                   hint={review('idNumber') ? 'Revisa este dato' : '10 dígitos'}
                 />
-                <Field
+                <VoiceField
+                  kind="date"
                   label="Fecha de nacimiento"
                   placeholder="12/03/1985"
                   value={showDate(data.birthDate)}
@@ -170,7 +185,8 @@ export function IdCardStep() {
                   error={errors.birthDate}
                   hint={review('birthDate') ? 'Revisa este dato' : 'Día/mes/año'}
                 />
-                <Field
+                <VoiceField
+                  kind="number"
                   label="Porcentaje de discapacidad"
                   inputMode="numeric"
                   value={data.disabilityPercent ? String(data.disabilityPercent) : ''}
@@ -181,7 +197,8 @@ export function IdCardStep() {
                   error={errors.disabilityPercent}
                   hint={review('disabilityPercent') ? 'Revisa este dato' : undefined}
                 />
-                <Field
+                <VoiceField
+                  kind="validity"
                   label="Vigencia"
                   placeholder="12/03/2030 o Indefinida"
                   value={showValidity(data.validity)}
@@ -233,21 +250,15 @@ export function IdCardStep() {
           </section>
         )}
 
-        {!hasData && !scanError && (
-          <Button variant="ghost" onPress={() => { setData(emptyIdCard); setEditing(true) }}>
-            Prefiero escribir mis datos
-          </Button>
-        )}
-
         <aside className="idcard-help" aria-labelledby="no-card-title">
-          <h2 id="no-card-title" className="idcard-help__title">¿No tienes carnet?</h2>
+          <h2 id="no-card-title" className="idcard-help__title">¿Tu cédula no muestra la discapacidad?</h2>
           <p>
-            El carnet de discapacidad es gratuito. Lo obtienes con la calificación del Ministerio de Salud Pública (MSP).
+            Desde 2025 la cédula es el documento oficial. Puedes actualizarla después de la calificación del Ministerio de Salud Pública.
           </p>
           <ul>
             <li>
               <a href="https://www.salud.gob.ec/calificacion-o-recalificacion-de-personas-con-discapacidad/" target="_blank" rel="noreferrer">
-                Cómo sacar el carnet en el MSP (se abre en otra pestaña)
+                Cómo calificar o actualizar la discapacidad en el MSP (se abre en otra pestaña)
               </a>
             </li>
             <li>
@@ -262,7 +273,7 @@ export function IdCardStep() {
           <Button variant="secondary" onPress={() => navigate('/')}>
             Volver al inicio
           </Button>
-          <Button className="step__next" onPress={next} isDisabled={!hasData && !scanError}>
+          <Button className="step__next" onPress={next} isDisabled={!hasValidatedScan}>
             {editing ? 'Confirmar y continuar' : 'Mis datos están bien'} <ArrowRightIcon />
           </Button>
         </div>

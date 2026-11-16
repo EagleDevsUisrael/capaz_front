@@ -11,6 +11,7 @@ import './jobs.css'
 export function JobDetailPage() {
   const { jobId } = useParams()
   const easyRead = useA11yPrefs((s) => s.easyRead)
+  const readScreen = useA11yPrefs((s) => s.readScreen)
   const { data, isPending, isError, refetch } = useJob(jobId)
   const job = data?.job
 
@@ -33,7 +34,9 @@ export function JobDetailPage() {
     )
   }
 
-  if (easyRead && job.easyRead) {
+  const simplified = easyRead || readScreen
+
+  if (simplified && job.easyRead) {
     return (
       <div className="job-page">
         <EasyReadDetail job={job} easyRead={job.easyRead} applicationId={data.applicationId} />
@@ -46,7 +49,7 @@ export function JobDetailPage() {
       <Link to="/" className="job-page__back">
         <ArrowLeftIcon size={20} /> Atrás
       </Link>
-      {easyRead && (
+      {simplified && (
         <p className="job-page__notice" role="status">
           Esta oferta todavía no tiene la versión de Lectura fácil. Te mostramos el texto normal.
         </p>

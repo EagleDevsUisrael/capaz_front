@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { registerCandidate } from './flows'
-import { firstJobId } from './helpers'
+import { dismissMobileReadScreenPrompt, firstJobId } from './helpers'
 
 async function expectNoHorizontalOverflow(page: Page, name: string) {
   const { scroll, width } = await page.evaluate(() => ({
@@ -37,6 +37,7 @@ test.describe('Celular', () => {
     test.setTimeout(180_000)
     const id = await firstJobId(page)
     await page.goto('/')
+    await dismissMobileReadScreenPrompt(page)
     await expect(page.locator('article.job-card').first()).toBeVisible()
     await expectNoHorizontalOverflow(page, 'inicio')
     await expect(page.getByRole('navigation', { name: 'Secciones' })).toBeVisible()
@@ -69,6 +70,16 @@ test.describe('Celular', () => {
     const report = Object.entries(offenders).filter(([, v]) => v.length)
     await test.info().attach('objetivos-pequenos.json', { body: JSON.stringify(Object.fromEntries(report), null, 2), contentType: 'application/json' })
     expect(report, 'Objetivos táctiles de menos de 44x44 px').toEqual([])
+  })
+
+  test('pregunta si debe activar Leer pantalla al entrar por primera vez', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByRole('dialog', { name: 'Configurar lectura de pantalla' })).toBeVisible()
+    await page.getByRole('button', { name: 'Activar Leer pantalla', exact: true }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-reader', 'active')
+    await expect(page.getByRole('heading', { level: 1, name: 'Busca un trabajo para ti' })).toBeVisible()
+    await page.reload()
+    await expect(page.getByRole('dialog', { name: 'Configurar lectura de pantalla' })).toHaveCount(0)
   })
 
   test('cámara del carnet con cámara simulada', async ({ page }) => {

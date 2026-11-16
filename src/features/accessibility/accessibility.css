@@ -47,6 +47,9 @@
 .dialog__title { font-size: var(--fs-h2); }
 .dialog__lead { color: var(--muted); }
 .dialog__actions { display: flex; justify-content: flex-end; }
+.dialog-modal--reader { width: min(520px, 100%); }
+.reader-prompt { text-align: center; justify-items: center; }
+.reader-prompt__actions { width: 100%; display: grid; gap: 12px; }
 
 /* ---------- Selector de colores (daltonismo) ---------- */
 .cv { display: grid; gap: 12px; }

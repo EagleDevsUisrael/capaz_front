@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test'
-import { expectNoA11yViolations, firstJobId } from './helpers'
+import { dismissMobileReadScreenPrompt, expectNoA11yViolations, firstJobId } from './helpers'
 
 test.describe('Inicio', () => {
   test('carga ofertas reales, busca y filtra por accesibilidad', async ({ page }) => {
     await page.goto('/')
+    await dismissMobileReadScreenPrompt(page)
     await expect(page.getByRole('heading', { level: 1, name: /Encuentra un trabajo/ })).toBeVisible()
     const cards = page.locator('article.job-card')
     await expect(cards.first()).toBeVisible()
@@ -63,6 +64,7 @@ test.describe('Inicio', () => {
   test('letra grande y alto contraste siguen siendo accesibles', async ({ page }) => {
     const id = await firstJobId(page)
     await page.goto('/')
+    await dismissMobileReadScreenPrompt(page)
     const bar = page.getByRole('region', { name: 'Opciones de accesibilidad' })
     if (await bar.isVisible()) {
       await bar.getByRole('button', { name: 'Letra grande' }).click()

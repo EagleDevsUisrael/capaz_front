@@ -29,5 +29,5 @@ export interface JobFilters {
 
 export const EMPTY_FILTERS: JobFilters = { q: '', where: '', features: [], schedule: [], salary: null }
 
-/** Cuota legal de contratación de personas con discapacidad en Ecuador (%): texto fijo del inicio */
+/** Cuota mínima en Ecuador para empleadores públicos o privados con 25 o más trabajadores. */
 export const LEGAL_QUOTA = 4

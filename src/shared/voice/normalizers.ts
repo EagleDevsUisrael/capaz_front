@@ -3,7 +3,7 @@
  * Funciones puras, sin dependencias: se pueden probar fuera del navegador.
  */
 
-export type FieldKind = 'name' | 'email' | 'phone' | 'idNumber' | 'city' | 'longText' | 'query'
+export type FieldKind = 'name' | 'email' | 'phone' | 'idNumber' | 'number' | 'date' | 'validity' | 'city' | 'longText' | 'query'
 
 const DIGITS: Record<string, string> = {
   cero: '0',
@@ -27,6 +27,11 @@ export function spokenToDigits(text: string): string {
     .map((w) => DIGITS[w] ?? w)
     .join('')
     .replace(/\D/g, '')
+}
+
+function spokenToDate(text: string): string {
+  const digits = spokenToDigits(text)
+  return digits.length === 8 ? `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}` : text.trim()
 }
 
 /** "mafer punto torres arroba gmail punto com" → "mafer.torres@gmail.com" */
@@ -63,6 +68,9 @@ export const normalizers: Record<FieldKind, (text: string) => string> = {
   email: spokenToEmail,
   phone: spokenToDigits,
   idNumber: spokenToDigits,
+  number: spokenToDigits,
+  date: spokenToDate,
+  validity: (text) => (/indefinida/i.test(text) ? 'Indefinida' : spokenToDate(text)),
   name: toTitleCase,
   city: toTitleCase,
   // Experiencia o ajustes: se agrega al texto existente (lo hace VoiceField), aquí solo se limpia

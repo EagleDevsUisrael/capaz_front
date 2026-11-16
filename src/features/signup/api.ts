@@ -5,7 +5,7 @@ import type { IdCardField } from './useSignupStore'
 
 export interface ScanResult {
   scanId: string
-  /** true = la IA no pudo leer el carnet: las fotos se guardaron, pero los datos se escriben a mano */
+  /** Compatibilidad con respuestas anteriores; ahora el backend devuelve error si no puede validar el documento. */
   ocrFailed?: boolean
   fullName: string | null
   idNumber: string | null

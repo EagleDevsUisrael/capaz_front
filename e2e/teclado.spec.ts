@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { registerCandidate } from './flows'
-import { uniqueCedula } from './helpers'
+import { dismissMobileReadScreenPrompt, uniqueCedula } from './helpers'
 
 /** El elemento con foco tiene un indicador visible (outline o box-shadow) */
 async function focusIndicator(page: Page) {
@@ -19,6 +19,7 @@ test.describe('Solo teclado', () => {
 
   test('el enlace "Saltar al contenido" lleva el foco al main', async ({ page }) => {
     await page.goto('/')
+    await dismissMobileReadScreenPrompt(page)
     await expect(page.locator('article.job-card').first()).toBeVisible()
     await page.keyboard.press('Tab')
     const skip = page.getByRole('link', { name: 'Saltar al contenido principal' }).first()
@@ -30,6 +31,7 @@ test.describe('Solo teclado', () => {
 
   test('Tab por la barra de accesibilidad y la cabecera con foco visible', async ({ page }) => {
     await page.goto('/')
+    await dismissMobileReadScreenPrompt(page)
     await expect(page.locator('article.job-card').first()).toBeVisible()
     const offenders: string[] = []
     for (let i = 0; i < 14; i++) {
@@ -64,6 +66,7 @@ test.describe('Solo teclado', () => {
     test.setTimeout(150_000)
     await registerCandidate(page)
     await page.goto('/')
+    await dismissMobileReadScreenPrompt(page)
     const btn = page.getByRole('button', { name: /Tu cuenta/ })
     await btn.focus()
     await page.keyboard.press('Enter')

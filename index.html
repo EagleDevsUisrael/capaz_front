@@ -24,7 +24,8 @@
           var el = document.documentElement;
           if (s.vision && s.vision !== 'normal') el.setAttribute('data-vision', s.vision);
           if (s.fontLarge) el.setAttribute('data-font', 'large');
-          if (s.easyRead) el.setAttribute('data-reading', 'easy');
+          if (s.easyRead || s.readScreen) el.setAttribute('data-reading', 'easy');
+          if (s.readScreen) el.setAttribute('data-reader', 'active');
         }
       } catch (e) {}
     </script>

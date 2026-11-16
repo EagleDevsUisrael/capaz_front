@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { registerCandidate } from './flows'
-import { expectNoA11yViolations } from './helpers'
+import { dismissMobileReadScreenPrompt, expectNoA11yViolations } from './helpers'
 
 test('registro completo, recomendaciones, postulación y nuevo ingreso', async ({ page }) => {
   test.setTimeout(180_000)
@@ -30,6 +30,7 @@ test('registro completo, recomendaciones, postulación y nuevo ingreso', async (
 
   // Cerrar sesión e ingresar de nuevo con la cédula
   await page.goto('/')
+  await dismissMobileReadScreenPrompt(page)
   const account = page.getByRole('button', { name: /Tu cuenta/ })
   if (await account.isVisible()) {
     await account.click()

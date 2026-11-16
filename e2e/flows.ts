@@ -15,12 +15,12 @@ export async function registerCandidate(page: Page, onStep: OnStep = async () =>
 
   // Paso 1: carnet
   await page.goto('/signup/id-card')
-  await expect(page.getByRole('heading', { level: 1, name: 'Tu carnet' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: 'Tu documento' })).toBeVisible()
   await onStep('registro-1-carnet')
   await page.locator('#idcard-front').setInputFiles(photo('frente.png'))
   await page.locator('#idcard-back').setInputFiles(photo('reverso.png'))
   await page.getByRole('button', { name: 'Leer mis datos' }).click()
-  await expect(page.getByRole('heading', { name: /Leímos estos datos|Escribe tus datos/ })).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByRole('heading', { name: 'Revisa los datos que leímos' })).toBeVisible({ timeout: 30_000 })
   await onStep('registro-1-datos-leidos')
 
   // La IA llenó la grilla (o el formulario si pidió revisar): el nombre no está vacío
