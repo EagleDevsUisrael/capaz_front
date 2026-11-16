@@ -36,6 +36,8 @@ interface AiAdviceResponse {
   items: { jobId: string; why: string }[]
   tip: string | null
   provider: string | null
+  cacheHit?: boolean
+  source?: 'redis' | 'ollama' | 'mock'
 }
 
 /**
@@ -107,6 +109,9 @@ function AiAdvice({ cacheKey }: { cacheKey: string }) {
             </p>
           )}
           <p className="foryou__small">Sugerencias hechas con IA. Revisa cada oferta antes de postular.</p>
+          <p className="foryou__small foryou__ai-source" aria-live="polite">
+            Fuente: {q.data.source === 'redis' ? 'cache Redis' : q.data.source === 'mock' ? 'modo simulado' : 'IA (Ollama)'}
+          </p>
         </>
       )}
     </section>
