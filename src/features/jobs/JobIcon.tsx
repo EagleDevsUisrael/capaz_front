@@ -1,5 +1,5 @@
 import { AudioIcon, BarChartIcon, BriefcaseIcon, HeadsetIcon, HomeIcon, MonitorIcon, ShieldCheckIcon } from '@/shared/ui/icons'
-import type { JobIcon as JobIconName } from './types'
+import type { JobIconName } from './types'
 
 const ICONS: Record<JobIconName, typeof BriefcaseIcon> = {
   headset: HeadsetIcon,

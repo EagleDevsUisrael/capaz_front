@@ -5,18 +5,18 @@ import { VoiceField } from '@/shared/voice/VoiceField'
 
 interface Props {
   q: string
-  city: string
-  onSearch: (v: { q: string; city: string }) => void
+  where: string
+  onSearch: (v: { q: string; where: string }) => void
 }
 
 /** Buscador del inicio: "¿Qué trabajo buscas?" y "¿En qué ciudad?", los dos con micrófono. */
-export function SearchBar({ q, city, onSearch }: Props) {
+export function SearchBar({ q, where, onSearch }: Props) {
   const [draftQ, setDraftQ] = useState(q)
-  const [draftCity, setDraftCity] = useState(city)
+  const [draftCity, setDraftCity] = useState(where)
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
-    onSearch({ q: draftQ, city: draftCity })
+    onSearch({ q: draftQ, where: draftCity })
   }
 
   return (

@@ -9,10 +9,13 @@ import { FiltersPanel } from './FiltersPanel'
 import { FiltersSheet } from './FiltersSheet'
 import { JobCard } from './JobCard'
 import { JobDetail } from './JobDetail'
-import { ACCESS_FILTER_LABEL, SALARY_OPTIONS, WORKDAY_LABEL } from './labels'
+import { FEATURE_LABEL, SALARY_OPTIONS, SCHEDULE_LABEL } from './labels'
 import { SearchBar } from './SearchBar'
 import { useJobFilters } from './useJobFilters'
 import './jobs.css'
+
+/** Cuota legal de contratación (LOSEP/Código del Trabajo): cifra fija del mockup, el backend no la entrega */
+const LEGAL_QUOTA = 4
 
 const plural = (n: number, one: string, many: string) => `${n.toLocaleString('es-EC')} ${n === 1 ? one : many}`
 
@@ -30,25 +33,26 @@ export function JobsPage() {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const jobs = data?.jobs ?? []
+  const jobs = data?.items ?? []
   const selected = jobs.find((j) => j.id === selectedId) ?? jobs[0]
 
-  // Texto de resultados: "Mostrando 14 ofertas con teletrabajo o acceso en silla de ruedas"
-  const withText = filters.accessibility.length
-    ? ` con ${filters.accessibility.map((a) => ACCESS_FILTER_LABEL[a].toLowerCase()).join(' o ')}`
+  // Texto de resultados: "Mostrando 3 ofertas con teletrabajo y acceso en silla de ruedas".
+  // El backend exige que la oferta cumpla TODOS los filtros marcados, por eso "y" (el mockup decía "o"; ver informe).
+  const withText = filters.features.length
+    ? ` con ${filters.features.map((a) => FEATURE_LABEL[a].toLowerCase()).join(' y ')}`
     : ''
   const countText = data ? `Mostrando ${plural(data.total, 'oferta', 'ofertas')}${withText}` : 'Buscando ofertas…'
 
   const activeChips = [
-    ...filters.accessibility.map((a) => ({
+    ...filters.features.map((a) => ({
       key: `a-${a}`,
-      label: ACCESS_FILTER_LABEL[a],
-      remove: () => setFilters({ accessibility: filters.accessibility.filter((x) => x !== a) }),
+      label: FEATURE_LABEL[a],
+      remove: () => setFilters({ features: filters.features.filter((x) => x !== a) }),
     })),
-    ...filters.workday.map((w) => ({
+    ...filters.schedule.map((w) => ({
       key: `w-${w}`,
-      label: WORKDAY_LABEL[w],
-      remove: () => setFilters({ workday: filters.workday.filter((x) => x !== w) }),
+      label: SCHEDULE_LABEL[w],
+      remove: () => setFilters({ schedule: filters.schedule.filter((x) => x !== w) }),
     })),
     ...(filters.salary
       ? [{ key: 's', label: SALARY_OPTIONS.find((o) => o.value === filters.salary)!.label, remove: () => setFilters({ salary: null }) }]
@@ -82,16 +86,16 @@ export function JobsPage() {
                   <span>provincias</span>
                 </li>
                 <li>
-                  <strong>{stats.legalQuota} %</strong>
+                  <strong>{LEGAL_QUOTA} %</strong>
                   <span>cuota legal de contratación</span>
                 </li>
               </ul>
             )}
           </div>
           <SearchBar
-            key={`${filters.q}|${filters.city}`}
+            key={`${filters.q}|${filters.where}`}
             q={filters.q}
-            city={filters.city}
+            where={filters.where}
             onSearch={(v) => setFilters(v)}
           />
           <p className="hero__hint">Toca el micrófono y di lo que buscas. También funciona con TalkBack y VoiceOver.</p>
@@ -101,7 +105,7 @@ export function JobsPage() {
       {/* ---------- Cuerpo ---------- */}
       <div className="jobs-body">
         <aside className="jobs-body__filters" aria-label="Filtros">
-          <FiltersPanel filters={filters} counts={data?.counts} onChange={setFilters} onClear={clear} showHeader />
+          <FiltersPanel filters={filters} facets={data?.facets} onChange={setFilters} onClear={clear} showHeader />
         </aside>
 
         <section className="jobs-body__list" aria-labelledby="list-title">
@@ -206,7 +210,7 @@ export function JobsPage() {
         isOpen={sheetOpen}
         onOpenChange={setSheetOpen}
         filters={filters}
-        counts={data?.counts}
+        facets={data?.facets}
         total={data?.total}
         onChange={setFilters}
         onClear={clear}

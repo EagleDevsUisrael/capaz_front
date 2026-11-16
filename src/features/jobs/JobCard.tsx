@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { Button } from '@/shared/ui'
 import { JobIcon } from './JobIcon'
-import { jobSubtitle, jobTags, money, postedLabel } from './labels'
+import { iconFor, jobSubtitle, jobTags, postedLabel, salaryText } from './labels'
 import type { Job } from './types'
 
 interface Props {
@@ -18,7 +18,7 @@ export function JobCard({ job, selected, onSelect }: Props) {
   return (
     <article className={`job-card${selected ? ' is-selected' : ''}`} aria-labelledby={titleId}>
       <div className="job-card__head">
-        <JobIcon name={job.icon} />
+        <JobIcon name={iconFor(job)} />
         <div>
           <h3 id={titleId} className="job-card__title">
             {job.title}
@@ -37,8 +37,8 @@ export function JobCard({ job, selected, onSelect }: Props) {
 
       <div className="job-card__foot">
         <div>
-          <p className="job-card__salary">{money(job.salary)} / mes</p>
-          <p className="job-card__posted">{postedLabel(job.postedDaysAgo)}</p>
+          <p className="job-card__salary">{salaryText(job)} / mes</p>
+          <p className="job-card__posted">{postedLabel(job.createdAt)}</p>
         </div>
 
         {onSelect ? (

@@ -11,7 +11,8 @@ import './jobs.css'
 export function JobDetailPage() {
   const { jobId } = useParams()
   const easyRead = useA11yPrefs((s) => s.easyRead)
-  const { data: job, isPending, isError, refetch } = useJob(jobId)
+  const { data, isPending, isError, refetch } = useJob(jobId)
+  const job = data?.job
 
   if (isPending) return <p className="state job-page">Cargando la oferta…</p>
 
@@ -32,10 +33,10 @@ export function JobDetailPage() {
     )
   }
 
-  if (easyRead && job.easyReadSummary) {
+  if (easyRead && job.easyRead) {
     return (
       <div className="job-page">
-        <EasyReadDetail job={{ ...job, easyReadSummary: job.easyReadSummary }} />
+        <EasyReadDetail job={job} easyRead={job.easyRead} />
       </div>
     )
   }

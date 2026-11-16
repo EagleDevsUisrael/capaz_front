@@ -1,13 +1,12 @@
 import { Checkbox, CheckboxGroup, Label } from 'react-aria-components'
 import { ChipGroup } from '@/shared/ui'
 import { CheckIcon } from '@/shared/ui/icons'
-import { ACCESSIBILITY_FILTERS } from './filterJobs'
-import { ACCESS_FILTER_LABEL, SALARY_OPTIONS, WORKDAY_LABEL, WORKDAYS } from './labels'
-import type { AccessibilityFilter, JobFilters, SalaryRange, Workday } from './types'
+import { FEATURE_LABEL, FEATURES, SALARY_OPTIONS, SCHEDULE_LABEL, SCHEDULES } from './labels'
+import type { JobFeature, JobFilters, JobsResponse, SalaryRange, Schedule } from './types'
 
 interface Props {
   filters: JobFilters
-  counts?: Record<AccessibilityFilter, number>
+  facets?: JobsResponse['facets']
   onChange: (patch: Partial<JobFilters>) => void
   /** Escritorio: título "Filtrar ofertas" + "Borrar todo" arriba */
   showHeader?: boolean
@@ -30,7 +29,7 @@ function CheckRow({ value, label, count }: { value: string; label: string; count
  * Filtros: accesibilidad del puesto, tipo de jornada y salario. Se usa en la barra lateral (escritorio)
  * y dentro del panel "Filtrar ofertas" (celular). Las opciones de un mismo grupo se suman (o).
  */
-export function FiltersPanel({ filters, counts, onChange, showHeader, onClear }: Props) {
+export function FiltersPanel({ filters, facets, onChange, showHeader, onClear }: Props) {
   return (
     <div className="filters">
       {showHeader && (
@@ -44,23 +43,23 @@ export function FiltersPanel({ filters, counts, onChange, showHeader, onClear }:
 
       <CheckboxGroup
         className="filters__group"
-        value={filters.accessibility}
-        onChange={(v) => onChange({ accessibility: v as AccessibilityFilter[] })}
+        value={filters.features}
+        onChange={(v) => onChange({ features: v as JobFeature[] })}
       >
         <Label className="filters__label">Accesibilidad del puesto</Label>
-        {ACCESSIBILITY_FILTERS.map((a) => (
-          <CheckRow key={a} value={a} label={ACCESS_FILTER_LABEL[a]} count={counts?.[a]} />
+        {FEATURES.map((a) => (
+          <CheckRow key={a} value={a} label={FEATURE_LABEL[a]} count={facets?.features[a]} />
         ))}
       </CheckboxGroup>
 
       <CheckboxGroup
         className="filters__group"
-        value={filters.workday}
-        onChange={(v) => onChange({ workday: v as Workday[] })}
+        value={filters.schedule}
+        onChange={(v) => onChange({ schedule: v as Schedule[] })}
       >
         <Label className="filters__label">Tipo de jornada</Label>
-        {WORKDAYS.map((w) => (
-          <CheckRow key={w} value={w} label={WORKDAY_LABEL[w]} />
+        {SCHEDULES.map((w) => (
+          <CheckRow key={w} value={w} label={SCHEDULE_LABEL[w]} count={facets?.schedule[w]} />
         ))}
       </CheckboxGroup>
 

@@ -1,20 +1,20 @@
 import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { Button } from '@/shared/ui'
 import { FiltersPanel } from './FiltersPanel'
-import type { AccessibilityFilter, JobFilters } from './types'
+import type { JobFilters, JobsResponse } from './types'
 
 interface Props {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   filters: JobFilters
-  counts?: Record<AccessibilityFilter, number>
+  facets?: JobsResponse['facets']
   total?: number
   onChange: (patch: Partial<JobFilters>) => void
   onClear: () => void
 }
 
 /** Panel "Filtrar ofertas" a pantalla casi completa (celular). Los filtros se aplican al instante. */
-export function FiltersSheet({ isOpen, onOpenChange, filters, counts, total, onChange, onClear }: Props) {
+export function FiltersSheet({ isOpen, onOpenChange, filters, facets, total, onChange, onClear }: Props) {
   return (
     <ModalOverlay isOpen={isOpen} onOpenChange={onOpenChange} isDismissable className="dialog-overlay dialog-overlay--sheet">
       <Modal className="sheet">
@@ -30,7 +30,7 @@ export function FiltersSheet({ isOpen, onOpenChange, filters, counts, total, onC
                 </Button>
               </div>
               <div className="sheet__body">
-                <FiltersPanel filters={filters} counts={counts} onChange={onChange} />
+                <FiltersPanel filters={filters} facets={facets} onChange={onChange} />
               </div>
               <div className="sheet__foot">
                 <Button variant="secondary" onPress={onClear}>

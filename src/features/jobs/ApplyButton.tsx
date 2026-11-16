@@ -5,6 +5,7 @@ import { useSession } from '@/features/auth/useSession'
 import { useSignupStore } from '@/features/signup/useSignupStore'
 import { Button } from '@/shared/ui'
 import { ArrowRightIcon } from '@/shared/ui/icons'
+import { ApiError } from '@/shared/api/client'
 import { useApply } from './api'
 import { jobSubtitle } from './labels'
 import type { Job } from './types'
@@ -44,7 +45,7 @@ export function ApplyButton({ job, label = 'Postular a esta oferta', fullWidth }
       </Button>
       {apply.isError && (
         <p className="apply__error" role="alert">
-          ⚠ No pudimos enviar tu postulación. Inténtalo otra vez.
+          ⚠ {apply.error instanceof ApiError ? apply.error.message : 'No pudimos enviar tu postulación. Inténtalo otra vez.'}
         </p>
       )}
 

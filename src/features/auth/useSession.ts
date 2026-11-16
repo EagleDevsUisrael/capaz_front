@@ -3,20 +3,23 @@ import { persist } from 'zustand/middleware'
 
 interface SessionState {
   signedIn: boolean
-  signIn: () => void
+  /** Token que devuelven POST /signup y POST /auth/verify; se manda como Authorization: Bearer */
+  token: string | null
+  signIn: (token?: string) => void
   signOut: () => void
 }
 
 /**
- * Sesión de DEMOSTRACIÓN: solo recuerda si la persona "ya ingresó" (al terminar el registro).
- * TODO(backend): reemplazar por la sesión real (cédula + código de 4 dígitos por WhatsApp o SMS).
+ * Sesión. TODO(backend): el registro (paso 1 con OCR) y el ingreso (/login) aún no llaman al backend:
+ * mientras tanto `signIn()` sin token deja una sesión de demostración que solo sirve con los datos de prueba (MSW).
  */
 export const useSession = create<SessionState>()(
   persist(
     (set) => ({
       signedIn: false,
-      signIn: () => set({ signedIn: true }),
-      signOut: () => set({ signedIn: false }),
+      token: null,
+      signIn: (token) => set({ signedIn: true, token: token ?? null }),
+      signOut: () => set({ signedIn: false, token: null }),
     }),
     { name: 'capaz-session' },
   ),

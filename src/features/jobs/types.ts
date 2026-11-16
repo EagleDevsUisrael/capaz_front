@@ -1,24 +1,20 @@
-import type { Accommodation } from '@/features/signup/options'
+/** Forma de las ofertas = jobDto del backend (capaz_backend/src/modules/dto.ts). Códigos en inglés, igual que el catálogo. */
+import type { Accommodation, EducationLevel } from '@/features/signup/options'
 
-export type Modality = 'remote' | 'hybrid' | 'onsite'
-export type Workday = 'fullTime' | 'partTime' | 'internship'
+export type Modality = 'remote' | 'hybrid' | 'onSite'
+export type Schedule = 'fullTime' | 'partTime' | 'internship'
 export type DisabilityType = 'physical' | 'visual' | 'hearing' | 'intellectual' | 'psychosocial'
-/** Exigencias físicas del puesto (las usa el motor de match para descartar ofertas) */
 export type PhysicalDemand = 'bothHands' | 'standing' | 'walkingDriving' | 'seeScreen' | 'phoneSpeaking' | 'hearing'
-export type JobIcon = 'headset' | 'chart' | 'audio' | 'shield' | 'briefcase' | 'monitor' | 'home'
-/** Pictogramas de la versión Lectura fácil */
-export type PictoName = 'phone' | 'help' | 'home' | 'calendar' | 'clock' | 'money' | 'computer' | 'school' | 'check'
+export type JobIconName = 'headset' | 'chart' | 'audio' | 'shield' | 'briefcase' | 'monitor' | 'home'
 
-export interface EasyReadSection {
-  heading: string
-  lines: { icon: PictoName; text: string }[]
-}
-
-/** Texto escrito a mano por el admin (documento: campo `easyReadSummary`). Sin generar al vuelo. */
-export interface EasyReadSummary {
-  title: string
-  company: string
-  sections: EasyReadSection[]
+/** Lectura fácil por secciones: frases cortas, una idea por línea. null si el admin no la escribió. */
+export interface EasyRead {
+  jobTitle: string
+  whatYouDo: string[]
+  whereAndWhen: string[]
+  pay: string[]
+  whatYouGet: string[]
+  whatYouNeed: string[]
 }
 
 export interface Job {
@@ -26,56 +22,78 @@ export interface Job {
   title: string
   company: string
   city: string
-  province: string
+  /** null = todo el país (teletrabajo) */
+  province: string | null
   modality: Modality
-  workday: Workday
-  /** Salario mensual en dólares */
-  salary: number
-  postedDaysAgo: number
-  hoursPerDay: number
-  icon: JobIcon
-  /** Texto corto de la tarjeta */
+  schedule: Schedule
+  dailyHours: number | null
+  salaryMin: number | null
+  salaryMax: number | null
+  /** Tarjeta de la lista */
   summary: string
   /** "Qué harás" */
-  tasks: string
-  /** Ajustes que ofrece la empresa, en lenguaje sencillo */
-  offered: string[]
+  description: string
+  /** "Qué necesitas" */
   requirements: string[]
-  benefits: string
-  /** Códigos que usa el match (mismos que los ajustes que pide la persona) */
-  accommodationsOffered: Accommodation[]
+  /** "Ajustes que ofrece la empresa" */
+  accommodationsDetail: string[]
+  /** "Salario y beneficios" */
+  salaryBenefits: string
+  easyRead: EasyRead | null
   compatibleDisabilities: DisabilityType[]
   physicalDemands: PhysicalDemand[]
+  accommodationsOffered: Accommodation[]
   keywords: string[]
-  easyReadSummary?: EasyReadSummary
+  minEducation: EducationLevel | null
+  isActive: boolean
+  createdAt: string
 }
 
-/** Filtros "Accesibilidad del puesto". 'remote' sale de la modalidad; los demás, de accommodationsOffered. */
-export type AccessibilityFilter = 'remote' | 'ramp' | 'screenReader' | 'signLanguage' | 'flexibleSchedule'
+/** Resultado del motor de match (solo llega con sesión). */
+export interface Match {
+  jobId: string
+  score: number
+  recommended: boolean
+  rejected: boolean
+  rejectReason: string | null
+  reasons: string[]
+  warnings: string[]
+}
+
+export type JobItem = Job & { match: Match | null }
+
+/** Filtros "Accesibilidad del puesto" = `features` del backend. La oferta debe cumplir TODOS los marcados. */
+export type JobFeature = 'remote' | 'wheelchair' | 'screenReader' | 'signLanguage' | 'flexibleSchedule'
 export type SalaryRange = '470-600' | '600-900' | '900+'
 
 export interface JobFilters {
   /** "¿Qué trabajo buscas?" */
   q: string
-  /** "¿En qué ciudad?" ("teletrabajo" muestra las remotas) */
-  city: string
-  accessibility: AccessibilityFilter[]
-  workday: Workday[]
+  /** "¿En qué ciudad?" (acepta "teletrabajo") */
+  where: string
+  features: JobFeature[]
+  schedule: Schedule[]
   salary: SalaryRange | null
 }
 
-export const EMPTY_FILTERS: JobFilters = { q: '', city: '', accessibility: [], workday: [], salary: null }
+export const EMPTY_FILTERS: JobFilters = { q: '', where: '', features: [], schedule: [], salary: null }
 
 export interface JobsResponse {
-  jobs: Job[]
   total: number
-  /** Cuántas ofertas tiene cada filtro de accesibilidad (sobre todo el catálogo) */
-  counts: Record<AccessibilityFilter, number>
+  page: number
+  pageSize: number
+  sort: 'compatibility' | 'recent'
+  /** Cuántas ofertas habría al marcar cada filtro, sumado a lo ya elegido */
+  facets: {
+    features: Record<JobFeature, number>
+    salary: Record<SalaryRange, number>
+    schedule: Record<Schedule, number>
+  }
+  items: JobItem[]
 }
 
 export interface Stats {
   activeJobs: number
+  remoteJobs: number
   provinces: number
-  /** Cuota legal de contratación de personas con discapacidad (%) */
-  legalQuota: number
 }

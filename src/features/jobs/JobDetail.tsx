@@ -1,6 +1,6 @@
 import { ApplyButton } from './ApplyButton'
 import { JobIcon } from './JobIcon'
-import { DISABILITY_LABEL, MODALITY_LABEL, money } from './labels'
+import { DISABILITY_LABEL, iconFor, jobSubtitle, MODALITY_LABEL, salaryText } from './labels'
 import type { Job } from './types'
 
 interface Props {
@@ -20,16 +20,13 @@ export function JobDetail({ job, as = 'page' }: Props) {
   return (
     <article className={`job-detail job-detail--${as}`}>
       <header className="job-detail__head">
-        <JobIcon name={job.icon} size={32} />
+        <JobIcon name={iconFor(job)} size={32} />
         <Title className="job-detail__title">{job.title}</Title>
-        <p className="job-detail__sub">
-          {job.company} · {job.city}
-          {job.city !== 'Todo el país' && job.modality === 'remote' ? ' · Teletrabajo desde casa' : job.modality !== 'remote' ? ` · ${MODALITY_LABEL[job.modality]}` : ''}
-        </p>
+        <p className="job-detail__sub">{jobSubtitle(job)}</p>
         <ul className="job-detail__meta" aria-label="Datos principales">
-          <li>{money(job.salary)}</li>
+          <li>{salaryText(job)}</li>
           <li>{MODALITY_LABEL[job.modality]}</li>
-          <li>{job.hoursPerDay} h</li>
+          {job.dailyHours != null && <li>{job.dailyHours} h</li>}
         </ul>
       </header>
 
@@ -44,13 +41,13 @@ export function JobDetail({ job, as = 'page' }: Props) {
 
       <section className="job-detail__block">
         <Section className="job-detail__h">Qué harás</Section>
-        <p>{job.tasks}</p>
+        <p>{job.description}</p>
       </section>
 
       <section className="job-detail__block">
         <Section className="job-detail__h">Ajustes que ofrece la empresa</Section>
         <ul className="job-detail__list">
-          {job.offered.map((o) => (
+          {job.accommodationsDetail.map((o) => (
             <li key={o}>{o}</li>
           ))}
         </ul>
@@ -67,7 +64,7 @@ export function JobDetail({ job, as = 'page' }: Props) {
 
       <section className="job-detail__block">
         <Section className="job-detail__h">Salario y beneficios</Section>
-        <p>{job.benefits}</p>
+        <p>{job.salaryBenefits}</p>
       </section>
 
       <footer className="job-detail__apply">
