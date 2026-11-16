@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router'
 import { RequireSession } from '@/features/auth/RequireSession'
 import { useMe } from '@/features/auth/api'
 import { useSession } from '@/features/auth/useSession'
 import { api, errorMessage } from '@/shared/api/client'
 import { labelIn, useCatalog } from '@/shared/api/catalog'
-import type { ApplicationStatus, Job, Match } from '@/shared/api/types'
+import type { ApplicationStatus, Job, Match, Profile } from '@/shared/api/types'
 import './matches.css'
 
 interface MatchItem {
@@ -41,35 +42,65 @@ interface AiAdviceResponse {
  * "Lo que te recomienda la IA". Carga aparte (la IA puede tardar) y, si falla, no muestra nada:
  * las recomendaciones de abajo siguen funcionando sin IA.
  */
-function AiAdvice({ titles }: { titles: Map<string, string> }) {
-  const q = useQuery({
-    queryKey: ['matches', 'ai'],
-    queryFn: () => api<AiAdviceResponse>('/matches/ai'),
-    retry: false,
-    staleTime: 5 * 60_000,
+function aiCacheKey(profile: Profile | null, recommended: MatchItem[]) {
+  if (!profile) return ''
+  const value = JSON.stringify({
+    candidate: profile.id,
+    city: profile.contact.city,
+    hasWorked: profile.experience.hasWorked,
+    experienceText: profile.experience.experienceText,
+    education: profile.experience.education,
+    skills: profile.experience.skills,
+    accommodationsNeeded: profile.experience.accommodationsNeeded,
+    otherAccommodation: profile.experience.otherAccommodation,
+    jobs: recommended.map((r) => r.job.id),
   })
+  let hash = 2166136261
+  for (let i = 0; i < value.length; i += 1) hash = Math.imul(hash ^ value.charCodeAt(i), 16777619)
+  return (hash >>> 0).toString(16)
+}
+
+function AiAdvice({ cacheKey }: { cacheKey: string }) {
+  const queryClient = useQueryClient()
+  const [refreshing, setRefreshing] = useState(false)
+
+  const q = useQuery({
+    queryKey: ['matches', 'ai', cacheKey],
+    queryFn: () => api<AiAdviceResponse>('/matches/ai'),
+    enabled: Boolean(cacheKey),
+    retry: false,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  })
+
+  const refresh = async () => {
+    setRefreshing(true)
+    try {
+      const fresh = await api<AiAdviceResponse>('/matches/ai', { query: { refresh: true } })
+      queryClient.setQueryData(['matches', 'ai', cacheKey], fresh)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   if (q.isError || (q.data && !q.data.summary)) return null
   return (
     <section aria-labelledby="foryou-ai" className="foryou__ai" aria-busy={q.isPending}>
-      <h2 id="foryou-ai">
-        <span aria-hidden="true">✨ </span>Lo que te recomienda la IA
-      </h2>
+      <div className="foryou__ai-head">
+        <h2 id="foryou-ai">
+          <span aria-hidden="true">✨ </span>Recomendaciones de IA
+        </h2>
+        <button type="button" className="foryou__ai-refresh" onClick={() => void refresh()} disabled={q.isFetching || refreshing}>
+          {q.isFetching || refreshing ? 'Analizando…' : 'Volver a consultar IA'}
+        </button>
+      </div>
       {q.isPending ? (
         <p className="foryou__small" role="status">
-          La IA está revisando tu perfil…
+          Analizando tus ajustes y experiencia laboral…
         </p>
       ) : (
         <>
-          <p className="foryou__ai-summary">{q.data.summary}</p>
-          <ul className="foryou__ai-list">
-            {q.data.items
-              .filter((i) => titles.has(i.jobId))
-              .map((i) => (
-                <li key={i.jobId}>
-                  <Link to={`/jobs/${i.jobId}`}>{titles.get(i.jobId)}</Link>: {i.why}
-                </li>
-              ))}
-          </ul>
+          <p className="foryou__ai-summary">La IA te recomendó estas ofertas de acuerdo con tus ajustes y experiencia laboral.</p>
           {q.data.tip && (
             <p className="foryou__ai-tip">
               <strong>Consejo:</strong> {q.data.tip}
@@ -133,7 +164,7 @@ function ForYou() {
             </button>
           </div>
         )}
-        {q.data && <Results data={q.data} />}
+        {q.data && <Results data={q.data} profile={profile} />}
       </div>
 
       <p className="foryou__note">
@@ -144,7 +175,7 @@ function ForYou() {
   )
 }
 
-function Results({ data }: { data: MatchesResponse }) {
+function Results({ data, profile }: { data: MatchesResponse; profile: Profile | null }) {
   const { counts, recommended, firstApplication } = data
   return (
     <>
@@ -169,7 +200,7 @@ function Results({ data }: { data: MatchesResponse }) {
         </section>
       )}
 
-      {recommended.length > 0 && <AiAdvice titles={new Map(recommended.map((r) => [r.job.id, r.job.title]))} />}
+      {recommended.length > 0 && <AiAdvice cacheKey={aiCacheKey(profile, recommended)} />}
 
       <section aria-labelledby="foryou-rec">
         <h2 id="foryou-rec">Recomendados para ti</h2>
@@ -178,13 +209,7 @@ function Results({ data }: { data: MatchesResponse }) {
             No hay recomendaciones nuevas. Revisa todas las ofertas: hay {counts.totalJobs} publicadas.
           </p>
         ) : (
-          <ol className="foryou__list">
-            {recommended.map((r) => (
-              <li key={r.job.id}>
-                <MatchCard item={r} />
-              </li>
-            ))}
-          </ol>
+          <RecommendedCarousel items={recommended} />
         )}
       </section>
       {data.others.length > 0 && (
@@ -194,6 +219,30 @@ function Results({ data }: { data: MatchesResponse }) {
         </p>
       )}
     </>
+  )
+}
+
+function RecommendedCarousel({ items }: { items: MatchItem[] }) {
+  const [index, setIndex] = useState(0)
+  useEffect(() => setIndex((current) => Math.min(current, Math.max(0, items.length - 1))), [items.length])
+  const move = (delta: number) => setIndex((current) => (current + delta + items.length) % items.length)
+  const current = items[index]
+  if (!current) return null
+  return (
+    <div className="foryou__carousel" aria-roledescription="carrusel" aria-label="Trabajos recomendados">
+      <div className="foryou__carousel-card" aria-live="polite">
+        <MatchCard item={current} />
+      </div>
+      <div className="foryou__carousel-controls">
+        <button type="button" className="foryou__btn foryou__btn--secondary" onClick={() => move(-1)} aria-label="Trabajo recomendado anterior">
+          Anterior
+        </button>
+        <span className="foryou__pagination" aria-live="polite">{index + 1} de {items.length}</span>
+        <button type="button" className="foryou__btn" onClick={() => move(1)} aria-label="Siguiente trabajo recomendado">
+          Siguiente
+        </button>
+      </div>
+    </div>
   )
 }
 
