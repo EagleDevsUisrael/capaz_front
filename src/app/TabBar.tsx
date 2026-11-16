@@ -9,7 +9,7 @@ export function TabBar() {
       <NavLink to="/" end>Buscar</NavLink>
       <NavLink to="/for-you">Para ti</NavLink>
       <NavLink to="/applications">Postulaciones</NavLink>
-      <NavLink to={signedIn ? '/accessibility' : '/login'}>{signedIn ? 'Perfil' : 'Ingresar'}</NavLink>
+      <NavLink to={signedIn ? '/profile' : '/login'}>{signedIn ? 'Perfil' : 'Ingresar'}</NavLink>
     </nav>
   )
 }

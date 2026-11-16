@@ -86,6 +86,7 @@ export function AppHeader() {
               </button>
               {userOpen && (
                 <ul id="user-menu" className="app-header__user-menu">
+                  <li><Link to="/profile" onClick={() => setUserOpen(false)}>Mi perfil de trabajo</Link></li>
                   <li><Link to="/applications" onClick={() => setUserOpen(false)}>Mis postulaciones</Link></li>
                   <li><Link to="/for-you" onClick={() => setUserOpen(false)}>Para ti</Link></li>
                   <li><button type="button" onClick={logout}>Cerrar sesión</button></li>

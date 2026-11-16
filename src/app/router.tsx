@@ -8,6 +8,7 @@ import { LoginPage } from '@/features/auth/LoginPage'
 import { JobDetailPage } from '@/features/jobs/JobDetailPage'
 import { JobsPage } from '@/features/jobs/JobsPage'
 import { ForYouPage } from '@/features/matches/ForYouPage'
+import { ProfilePage } from '@/features/profile/ProfilePage'
 import { ContactStep } from '@/features/signup/ContactStep'
 import { ExperienceStep } from '@/features/signup/ExperienceStep'
 import { IdCardCamera } from '@/features/signup/IdCardCamera'
@@ -29,6 +30,7 @@ const publicRoutes: RouteObject[] = [
     children: [
       { path: 'for-you', element: <ForYouPage /> },
       { path: 'applications', element: <ApplicationsPage /> },
+      { path: 'profile', element: <ProfilePage /> },
     ],
   },
 ]

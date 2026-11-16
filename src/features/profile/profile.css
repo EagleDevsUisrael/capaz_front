@@ -1,0 +1,48 @@
+.profile-page {
+  min-height: 70vh;
+  padding: 2rem 1rem 5rem;
+}
+
+.profile-page__inner {
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+
+.profile-page__header {
+  margin-bottom: 1.5rem;
+}
+
+.profile-page__header h1 {
+  margin-bottom: .5rem;
+}
+
+.profile-page__header p {
+  max-width: 60ch;
+}
+
+.profile-page__card {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--color-border, #d8d8d8);
+  border-radius: 1rem;
+  background: var(--color-surface, #fff);
+}
+
+.profile-page__card h2 {
+  margin: 0;
+}
+
+.profile-page__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profile-page__message {
+  margin: 0;
+  color: #176b3a;
+}
+
+.profile-page__message--error {
+  color: #a12626;
+}
