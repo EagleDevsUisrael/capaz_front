@@ -122,3 +122,8 @@
 .easy__lines li { display: flex; gap: 14px; align-items: center; }
 .easy__picto { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: var(--radius-m); background: var(--brand-soft); color: var(--brand); }
 .easy__apply { position: sticky; bottom: 12px; }
+
+/* Compatibilidad (con sesión) y "Ya postulaste" */
+.job-card__match { margin-left: auto; padding: 4px 10px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: var(--fs-small); white-space: nowrap; align-self: flex-start; }
+.job-detail__warn-h { margin-top: 8px; font-weight: 700; }
+.job-detail__applied { font-weight: 700; color: var(--brand); margin-bottom: 8px; }

@@ -1,30 +1,35 @@
 import { Link } from 'react-router'
 import { Button } from '@/shared/ui'
 import { JobIcon } from './JobIcon'
-import { jobSubtitle, jobTags, money, postedLabel } from './labels'
-import type { Job } from './types'
+import { jobSubtitle, jobTags, postedLabel, salaryLabel } from './labels'
+import type { JobWithMatch } from './types'
 
 interface Props {
-  job: Job
+  job: JobWithMatch
   /** Escritorio con panel lateral: elegir una oferta la muestra a la derecha en vez de abrir otra página */
   selected?: boolean
-  onSelect?: (job: Job) => void
+  onSelect?: (job: JobWithMatch) => void
 }
 
-/** Tarjeta de oferta: título, empresa, resumen, etiquetas de accesibilidad, salario y botón de detalle. */
+/** Tarjeta de oferta: título, empresa, compatibilidad (con sesión), resumen, etiquetas, salario y botón. */
 export function JobCard({ job, selected, onSelect }: Props) {
   const titleId = `job-title-${job.id}`
 
   return (
     <article className={`job-card${selected ? ' is-selected' : ''}`} aria-labelledby={titleId}>
       <div className="job-card__head">
-        <JobIcon name={job.icon} />
+        <JobIcon job={job} />
         <div>
           <h3 id={titleId} className="job-card__title">
             {job.title}
           </h3>
           <p className="job-card__sub">{jobSubtitle(job)}</p>
         </div>
+        {job.match && (
+          <p className="job-card__match" aria-label={`${job.match.score} % compatible contigo`}>
+            <strong>{job.match.score} %</strong> compatible
+          </p>
+        )}
       </div>
 
       <p className="job-card__summary">{job.summary}</p>
@@ -37,21 +42,22 @@ export function JobCard({ job, selected, onSelect }: Props) {
 
       <div className="job-card__foot">
         <div>
-          <p className="job-card__salary">{money(job.salary)} / mes</p>
-          <p className="job-card__posted">{postedLabel(job.postedDaysAgo)}</p>
+          <p className="job-card__salary">{salaryLabel(job)} / mes</p>
+          <p className="job-card__posted">{postedLabel(job.createdAt)}</p>
         </div>
 
         {onSelect ? (
           <Button
             variant={selected ? 'primary' : 'secondary'}
             aria-pressed={selected}
-            aria-label={`${selected ? 'Viendo detalle de' : 'Ver detalle de'} ${job.title}`}
+            // El nombre accesible es el texto visible (WCAG 2.5.3); el título de la oferta va como descripción
+            aria-describedby={titleId}
             onPress={() => onSelect(job)}
           >
             {selected ? 'Viendo detalle' : 'Ver detalle de la oferta'}
           </Button>
         ) : (
-          <Link to={`/jobs/${job.id}`} className="ui-button ui-button--secondary" aria-label={`Ver detalle de ${job.title}`}>
+          <Link to={`/jobs/${job.id}`} className="ui-button ui-button--secondary" aria-describedby={titleId}>
             Ver oferta
           </Link>
         )}

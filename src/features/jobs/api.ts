@@ -1,50 +1,53 @@
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
-import type { Job, JobFilters, JobsResponse, Stats } from './types'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSession } from '@/features/auth/useSession'
+import { api } from '@/shared/api/client'
+import type { JobDetailResponse, JobFilters, JobListResponse, Stats } from './types'
 
-/** Cliente de la API. Con MSW (datos de prueba) responde desde src/mocks; con el backend real, la misma URL. */
-async function getJson<T>(url: string): Promise<T> {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Error ${res.status}`)
-  return res.json() as Promise<T>
-}
+export type JobSort = 'compatibility' | 'recent'
 
-export function jobsQueryString(f: JobFilters): string {
-  const p = new URLSearchParams()
-  if (f.q.trim()) p.set('q', f.q.trim())
-  if (f.city.trim()) p.set('city', f.city.trim())
-  if (f.accessibility.length) p.set('accessibility', f.accessibility.join(','))
-  if (f.workday.length) p.set('workday', f.workday.join(','))
-  if (f.salary) p.set('salary', f.salary)
-  return p.toString()
-}
-
-export const useJobs = (filters: JobFilters) =>
-  useQuery({
-    queryKey: ['jobs', filters],
-    queryFn: () => getJson<JobsResponse>(`/api/jobs?${jobsQueryString(filters)}`),
+/** Lista de ofertas. Con sesión el back agrega `match` y puede ordenar por compatibilidad. */
+export function useJobs(filters: JobFilters, sort: JobSort) {
+  const token = useSession((s) => s.token)
+  return useQuery({
+    queryKey: ['jobs', filters, sort, Boolean(token)],
+    queryFn: ({ signal }) =>
+      api<JobListResponse>('/jobs', {
+        signal,
+        query: {
+          q: filters.q.trim(),
+          where: filters.where.trim(),
+          features: filters.features,
+          schedule: filters.schedule,
+          salary: filters.salary,
+          sort,
+          pageSize: 50,
+        },
+      }),
     // Mientras llega la nueva lista se sigue mostrando la anterior (sin parpadeos)
     placeholderData: keepPreviousData,
   })
+}
 
-export const useJob = (id: string | undefined) =>
-  useQuery({
-    queryKey: ['job', id],
-    queryFn: () => getJson<Job>(`/api/jobs/${id}`),
+export function useJob(id: string | undefined) {
+  const token = useSession((s) => s.token)
+  return useQuery({
+    queryKey: ['job', id, Boolean(token)],
+    queryFn: ({ signal }) => api<JobDetailResponse>(`/jobs/${id}`, { signal }),
     enabled: Boolean(id),
+    retry: false,
   })
+}
 
-export const useStats = () => useQuery({ queryKey: ['stats'], queryFn: () => getJson<Stats>('/api/stats') })
+export const useStats = () => useQuery({ queryKey: ['stats'], queryFn: () => api<Stats>('/stats') })
 
-/** Postular a una oferta (solo con sesión). */
-export const useApply = () =>
-  useMutation({
-    mutationFn: async (jobId: string) => {
-      const res = await fetch('/api/applications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId }),
-      })
-      if (!res.ok) throw new Error(`Error ${res.status}`)
-      return res.json() as Promise<{ id: string }>
+/** Postular a una oferta (solo con sesión). 409 ALREADY_APPLIED = ya postuló. */
+export function useApply() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (jobId: string) => api<{ id: string }>('/applications', { method: 'POST', body: { jobId } }),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ['job'] })
+      qc.invalidateQueries({ queryKey: ['applications'] })
     },
   })
+}

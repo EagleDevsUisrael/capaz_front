@@ -43,7 +43,8 @@
 @media (min-width: 900px) {
   .app-header__inner { padding: 18px 80px; }
   .app-header__options { display: none; }
-  .app-header__menu { display: none; }
+  /* Solo el botón "Menú": el botón de la cuenta (también .app-header__menu) debe seguir visible */
+  .app-header__menu:not(.app-header__user-btn) { display: none; }
   .app-header__nav { display: flex; flex-direction: row; width: auto; order: 0; gap: 28px; margin-left: 24px; }
   .app-header__nav a { padding: 8px 0; }
   /* Letra grande: el menú vuelve a ser un botón para que nada se corte */
@@ -51,4 +52,36 @@
   :root[data-font='large'] .app-header__nav { display: none; width: 100%; flex-direction: column; order: 3; margin-left: 0; }
   :root[data-font='large'] .app-header__nav.is-open { display: flex; }
   :root[data-font='large'] .app-header__options { display: inline; }
+}
+
+/* ---------- Menú de la cuenta ---------- */
+.app-header__user { position: relative; }
+.app-header__user-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 220px;
+  list-style: none; margin: 0; padding: 6px; background: #fff; color: var(--ink);
+  border-radius: var(--radius-m); box-shadow: 0 6px 24px #0003;
+}
+.app-header__user-menu a, .app-header__user-menu button {
+  display: block; width: 100%; min-height: 44px; padding: 10px 12px; text-align: left;
+  color: var(--ink); background: none; border: 0; font: inherit; text-decoration: none; cursor: pointer;
+}
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Barra de pestañas (solo celular) ---------- */
+.tab-bar {
+  position: fixed; inset: auto 0 0 0; z-index: 10; display: grid; grid-template-columns: repeat(4, 1fr);
+  background: #fff; border-top: 1.5px solid #d0d5dd;
+}
+.tab-bar a {
+  display: grid; place-items: center; min-height: 56px; padding: 6px 2px;
+  color: var(--ink); text-decoration: none; font-size: 0.9rem; border-top: 3px solid transparent;
+}
+.tab-bar a.active { font-weight: 700; border-top-color: var(--ink); }
+.public-main { padding-bottom: 72px; }
+@media (min-width: 900px) {
+  .tab-bar { display: none; }
+  .public-main { padding-bottom: 0; }
 }

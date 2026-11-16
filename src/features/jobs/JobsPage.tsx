@@ -9,8 +9,9 @@ import { FiltersPanel } from './FiltersPanel'
 import { FiltersSheet } from './FiltersSheet'
 import { JobCard } from './JobCard'
 import { JobDetail } from './JobDetail'
-import { ACCESS_FILTER_LABEL, SALARY_OPTIONS, WORKDAY_LABEL } from './labels'
+import { FEATURE_LABEL, SALARY_OPTIONS, SCHEDULE_LABEL } from './labels'
 import { SearchBar } from './SearchBar'
+import { LEGAL_QUOTA } from './types'
 import { useJobFilters } from './useJobFilters'
 import './jobs.css'
 
@@ -24,31 +25,31 @@ const plural = (n: number, one: string, many: string) => `${n.toLocaleString('es
 export function JobsPage() {
   const signedIn = useSession((s) => s.signedIn)
   const { filters, setFilters, clear, activeCount, hasAny } = useJobFilters()
-  const { data, isPending, isError, refetch, isFetching } = useJobs(filters)
+  const { data, isPending, isError, refetch, isFetching } = useJobs(filters, signedIn ? 'compatibility' : 'recent')
   const stats = useStats().data
   const showPanel = useMediaQuery('(min-width: 1180px)')
   const [sheetOpen, setSheetOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const jobs = data?.jobs ?? []
+  const jobs = data?.items ?? []
   const selected = jobs.find((j) => j.id === selectedId) ?? jobs[0]
 
   // Texto de resultados: "Mostrando 14 ofertas con teletrabajo o acceso en silla de ruedas"
-  const withText = filters.accessibility.length
-    ? ` con ${filters.accessibility.map((a) => ACCESS_FILTER_LABEL[a].toLowerCase()).join(' o ')}`
+  const withText = filters.features.length
+    ? ` con ${filters.features.map((a) => FEATURE_LABEL[a].toLowerCase()).join(' y ')}`
     : ''
   const countText = data ? `Mostrando ${plural(data.total, 'oferta', 'ofertas')}${withText}` : 'Buscando ofertas…'
 
   const activeChips = [
-    ...filters.accessibility.map((a) => ({
+    ...filters.features.map((a) => ({
       key: `a-${a}`,
-      label: ACCESS_FILTER_LABEL[a],
-      remove: () => setFilters({ accessibility: filters.accessibility.filter((x) => x !== a) }),
+      label: FEATURE_LABEL[a],
+      remove: () => setFilters({ features: filters.features.filter((x) => x !== a) }),
     })),
-    ...filters.workday.map((w) => ({
+    ...filters.schedule.map((w) => ({
       key: `w-${w}`,
-      label: WORKDAY_LABEL[w],
-      remove: () => setFilters({ workday: filters.workday.filter((x) => x !== w) }),
+      label: SCHEDULE_LABEL[w],
+      remove: () => setFilters({ schedule: filters.schedule.filter((x) => x !== w) }),
     })),
     ...(filters.salary
       ? [{ key: 's', label: SALARY_OPTIONS.find((o) => o.value === filters.salary)!.label, remove: () => setFilters({ salary: null }) }]
@@ -82,17 +83,17 @@ export function JobsPage() {
                   <span>provincias</span>
                 </li>
                 <li>
-                  <strong>{stats.legalQuota} %</strong>
+                  <strong>{LEGAL_QUOTA} %</strong>
                   <span>cuota legal de contratación</span>
                 </li>
               </ul>
             )}
           </div>
           <SearchBar
-            key={`${filters.q}|${filters.city}`}
+            key={`${filters.q}|${filters.where}`}
             q={filters.q}
-            city={filters.city}
-            onSearch={(v) => setFilters(v)}
+            city={filters.where}
+            onSearch={(v) => setFilters({ q: v.q, where: v.city })}
           />
           <p className="hero__hint">Toca el micrófono y di lo que buscas. También funciona con TalkBack y VoiceOver.</p>
         </div>
@@ -101,20 +102,20 @@ export function JobsPage() {
       {/* ---------- Cuerpo ---------- */}
       <div className="jobs-body">
         <aside className="jobs-body__filters" aria-label="Filtros">
-          <FiltersPanel filters={filters} counts={data?.counts} onChange={setFilters} onClear={clear} showHeader />
+          <FiltersPanel filters={filters} facets={data?.facets} onChange={setFilters} onClear={clear} showHeader />
         </aside>
 
         <section className="jobs-body__list" aria-labelledby="list-title">
           <div className="jobs-body__list-head">
             <div>
               <h2 id="list-title" className="jobs-body__title">
-                {hasAny ? 'Resultados' : 'Todas las ofertas'}
+                {signedIn ? 'Ofertas recomendadas' : hasAny ? 'Resultados' : 'Todas las ofertas'}
               </h2>
               <p className="jobs-body__count" role="status" aria-live="polite">
                 {countText}
               </p>
             </div>
-            <p className="jobs-body__sort">Ordenadas: más recientes primero</p>
+            <p className="jobs-body__sort">{signedIn ? 'Ordenar: más compatibles' : 'Ordenadas: más recientes primero'}</p>
           </div>
 
           {/* Celular: botón de filtros + chips de lo activo */}
@@ -197,7 +198,7 @@ export function JobsPage() {
 
         {showPanel && selected && (
           <aside className="jobs-body__detail" aria-label="Detalle de la oferta">
-            <JobDetail job={selected} as="panel" />
+            <JobDetail job={selected} match={selected.match} as="panel" />
           </aside>
         )}
       </div>
@@ -206,7 +207,7 @@ export function JobsPage() {
         isOpen={sheetOpen}
         onOpenChange={setSheetOpen}
         filters={filters}
-        counts={data?.counts}
+        facets={data?.facets}
         total={data?.total}
         onChange={setFilters}
         onClear={clear}

@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router'
 import { Button, ChipGroup } from '@/shared/ui'
 import { ArrowRightIcon } from '@/shared/ui/icons'
 import { VoiceField } from '@/shared/voice/VoiceField'
+import { errorMessage } from '@/shared/api/client'
+import { useCatalog } from '@/shared/api/catalog'
+import { uploadCv } from './api'
 import { ACCOMMODATIONS, EDUCATION_LEVELS, SKILLS, type Accommodation, type Skill } from './options'
 import { StepFrame } from './StepFrame'
 import { useSignupStore } from './useSignupStore'
@@ -19,7 +22,31 @@ export function ExperienceStep() {
   const [v, setV] = useState(saved)
   const set = <K extends keyof typeof v>(key: K, value: (typeof v)[K]) => setV((p) => ({ ...p, [key]: value }))
 
+  const cvUploadId = useSignupStore((s) => s.cvUploadId)
+  const saveCvUpload = useSignupStore((s) => s.saveCvUpload)
+  const setStepError = useSignupStore((s) => s.setStepError)
+  const [cvBusy, setCvBusy] = useState(false)
+  const [cvError, setCvError] = useState<string | null>(null)
+  const { data: catalog } = useCatalog()
+
+  const onCv = async (file: File | undefined) => {
+    if (!file) return
+    if (file.size > 10 * 1024 * 1024) return setCvError('El archivo pesa más de 10 MB. Prueba con uno más liviano.')
+    setCvBusy(true)
+    setCvError(null)
+    try {
+      const r = await uploadCv(file)
+      saveCvUpload(r.cvUploadId)
+      setV((p) => ({ ...p, cvFileName: r.fileName }))
+    } catch (e) {
+      setCvError(errorMessage(e))
+    } finally {
+      setCvBusy(false)
+    }
+  }
+
   const next = () => {
+    setStepError(null)
     saveExperience(v)
     markCompleted(3)
     navigate('/signup/privacy')
@@ -53,18 +80,26 @@ export function ExperienceStep() {
               value={v.experienceText}
               onChange={(x) => set('experienceText', x)}
             />
-            {/* TODO(backend): subir y analizar la hoja de vida. Por ahora solo se guarda el nombre del archivo. */}
+            {/* La hoja de vida se sube ya (POST /api/cv-uploads) y se vincula al crear la cuenta con cvUploadId */}
             <div className="cv-upload">
               <input
                 id="cv-file"
                 className="sr-only"
                 type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={(e) => set('cvFileName', e.target.files?.[0]?.name ?? '')}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={(e) => void onCv(e.target.files?.[0])}
               />
               <label htmlFor="cv-file" className="cv-upload__label">
-                📎 {v.cvFileName ? `Hoja de vida: ${v.cvFileName}` : '¿Tienes hoja de vida? Súbela aquí (opcional)'}
+                📎 {v.cvFileName ? `Hoja de vida: ${v.cvFileName} (cambiar)` : '¿Tienes hoja de vida? Súbela aquí (opcional)'}
               </label>
+              <p className="step__note" role="status" aria-live="polite">
+                {cvBusy ? 'Subiendo tu hoja de vida…' : v.cvFileName && cvUploadId ? 'Hoja de vida subida.' : 'PDF, Word, JPG o PNG de hasta 10 MB.'}
+              </p>
+              {cvError && (
+                <p role="alert" className="step__alert">
+                  {cvError}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -72,7 +107,7 @@ export function ExperienceStep() {
         <ChipGroup
           label="¿Hasta dónde estudiaste?"
           selectionMode="single"
-          options={[...EDUCATION_LEVELS]}
+          options={catalog?.educationLevels ?? [...EDUCATION_LEVELS]}
           value={v.education}
           onChange={(x) => set('education', x)}
         />
@@ -80,7 +115,7 @@ export function ExperienceStep() {
         <ChipGroup<Skill>
           label="¿Qué sabes hacer? Elige las que quieras"
           selectionMode="multiple"
-          options={[...SKILLS]}
+          options={catalog?.skills ?? [...SKILLS]}
           value={v.skills}
           onChange={(x) => set('skills', x)}
         />
@@ -90,7 +125,7 @@ export function ExperienceStep() {
             label="¿Qué ajustes necesitas en un trabajo?"
             labelHint="(opcional)"
             selectionMode="multiple"
-            options={[...ACCOMMODATIONS]}
+            options={catalog?.accommodations ?? [...ACCOMMODATIONS]}
             value={v.accommodationsNeeded}
             onChange={(x) => set('accommodationsNeeded', x)}
           />

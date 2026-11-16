@@ -38,5 +38,14 @@ export const ACCOMMODATIONS = [
 ] as const satisfies ChipOption<string>[]
 export type Accommodation = (typeof ACCOMMODATIONS)[number]['value']
 
-export const labelOf = (list: readonly ChipOption<string>[], value: string | null) =>
+/** Respaldo de GET /api/catalog (disabilityTypes) mientras carga */
+export const DISABILITY_TYPES = [
+  { value: 'physical', label: 'Física' },
+  { value: 'visual', label: 'Visual' },
+  { value: 'hearing', label: 'Auditiva' },
+  { value: 'intellectual', label: 'Intelectual' },
+  { value: 'psychosocial', label: 'Psicosocial' },
+] as const satisfies ChipOption<string>[]
+
+export const labelOf =(list: readonly ChipOption<string>[], value: string | null) =>
   list.find((o) => o.value === value)?.label ?? ''
