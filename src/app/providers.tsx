@@ -20,7 +20,16 @@ export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
-        defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
+        defaultOptions: {
+          queries: {
+            // Demo local: evitar tráfico periódico o reconsultas al cambiar de ventana.
+            staleTime: Infinity,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+            retry: 1,
+          },
+        },
       }),
   )
 
