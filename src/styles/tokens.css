@@ -127,19 +127,7 @@
   --fs-lead: 22px;
 }
 
-/* Leer pantalla: interfaz sobria, alto contraste y controles más grandes. */
+/* Leer pantalla solo amplía los objetivos táctiles; los colores pertenecen a `vision`. */
 :root[data-reader='active'] {
-  --ink: #000000;
-  --ink-deep: #000000;
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --text: #000000;
-  --muted: #202020;
-  --line: #000000;
-  --brand: #0033cc;
-  --brand-soft: #ffffff;
-  --on-ink-muted: #ffffff;
-  --border-w: 3px;
   --target: 68px;
-  --weight-body: 700;
 }

@@ -100,14 +100,6 @@ h1:focus {
   display: none;
 }
 
-:root[data-reader='active'] .ui-button,
-:root[data-reader='active'] button,
-:root[data-reader='active'] input,
-:root[data-reader='active'] textarea,
-:root[data-reader='active'] select {
-  border-width: 3px;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

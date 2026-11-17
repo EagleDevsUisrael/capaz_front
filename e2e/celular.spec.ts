@@ -77,9 +77,19 @@ test.describe('Celular', () => {
     await expect(page.getByRole('dialog', { name: 'Configurar lectura de pantalla' })).toBeVisible()
     await page.getByRole('button', { name: 'Activar Leer pantalla', exact: true }).click()
     await expect(page.locator('html')).toHaveAttribute('data-reader', 'active')
+    await expect(page.locator('html')).not.toHaveAttribute('data-reading', 'easy')
+    await expect(page.locator('html')).not.toHaveAttribute('data-vision', 'highContrast')
     await expect(page.getByRole('heading', { level: 1, name: 'Busca un trabajo para ti' })).toBeVisible()
     await page.reload()
     await expect(page.getByRole('dialog', { name: 'Configurar lectura de pantalla' })).toHaveCount(0)
+    await expect(page.locator('html')).toHaveAttribute('data-reader', 'active')
+    await expect(page.locator('html')).not.toHaveAttribute('data-reading', 'easy')
+    await expect(page.locator('html')).not.toHaveAttribute('data-vision', 'highContrast')
+
+    await page.goto('/accessibility')
+    await page.locator('label').filter({ has: page.getByRole('switch', { name: 'Alto contraste' }) }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-reader', 'active')
+    await expect(page.locator('html')).toHaveAttribute('data-vision', 'highContrast')
   })
 
   test('cámara del carnet con cámara simulada', async ({ page }) => {
