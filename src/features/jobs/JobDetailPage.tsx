@@ -11,7 +11,6 @@ import './jobs.css'
 export function JobDetailPage() {
   const { jobId } = useParams()
   const easyRead = useA11yPrefs((s) => s.easyRead)
-  const readScreen = useA11yPrefs((s) => s.readScreen)
   const { data, isPending, isError, refetch } = useJob(jobId)
   const job = data?.job
 
@@ -34,7 +33,7 @@ export function JobDetailPage() {
     )
   }
 
-  const simplified = easyRead || readScreen
+  const simplified = easyRead
 
   if (simplified && job.easyRead) {
     return (

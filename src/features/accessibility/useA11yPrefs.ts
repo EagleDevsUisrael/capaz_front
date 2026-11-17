@@ -86,6 +86,7 @@ export function applyPrefsToDocument(
 
   set('data-vision', s.vision === 'normal' ? null : s.vision)
   set('data-font', s.fontLarge ? 'large' : null)
-  set('data-reading', s.easyRead || s.readScreen ? 'easy' : null)
+  // La lectura fácil simplifica el contenido; Leer pantalla adapta la navegación y la voz.
+  set('data-reading', s.easyRead ? 'easy' : null)
   set('data-reader', s.readScreen ? 'active' : null)
 }
