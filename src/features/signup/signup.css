@@ -110,6 +110,11 @@
 .idcard-help__title { font-size: var(--fs-h3); }
 .idcard-help ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .idcard-help a { color: var(--brand); font-weight: 700; }
+.idcard-issue { display: grid; gap: 12px; padding: 18px; border: var(--border-w) solid var(--warn-line); border-radius: var(--radius-l); background: var(--warn-bg); color: var(--warn-fg); }
+.idcard-issue__title { font-size: var(--fs-h3); }
+.idcard-issue ul { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.idcard-issue__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.idcard-issue__actions .ui-button { text-decoration: none; }
 
 /* ---------- Paso 2: código del celular ---------- */
 .phone-code { display: grid; gap: 12px; padding: 20px; border: var(--border-w) solid var(--brand); border-radius: var(--radius-l); background: var(--brand-soft); }

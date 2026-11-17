@@ -58,6 +58,7 @@ export function IdCardStep() {
   const [editing, setEditing] = useState(false)
   const [scanning, setScanning] = useState(false)
   const [scanError, setScanError] = useState<string | null>(null)
+  const [missingDisability, setMissingDisability] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
   const hasValidatedScan = Boolean(saved.scanId)
   const set = <K extends keyof IdCardData>(k: K, v: IdCardData[K]) => setData((p) => ({ ...p, [k]: v }))
@@ -66,6 +67,7 @@ export function IdCardStep() {
     if (!photos.front || !photos.back) return
     setScanning(true)
     setScanError(null)
+    setMissingDisability(false)
     try {
       const r = await scanIdCard(photos.front.blob, photos.back.blob)
       const next: IdCardData = {
@@ -89,10 +91,12 @@ export function IdCardStep() {
       setStepError(null)
     } catch (e) {
       const unavailable = e instanceof ApiError && (e.status === 503 || e.code === 'IA_UNAVAILABLE')
+      const disabilityNotFound = e instanceof ApiError && e.code === 'DISABILITY_DATA_NOT_FOUND'
+      setMissingDisability(disabilityNotFound)
       setScanError(
         unavailable
           ? 'El servicio de lectura no está disponible. Intenta de nuevo en un momento; necesitamos validar tu documento para continuar.'
-          : e instanceof ApiError && e.code === 'ID_CARD_UNREADABLE'
+          : e instanceof ApiError && (e.code === 'ID_CARD_UNREADABLE' || e.code === 'DISABILITY_DATA_NOT_FOUND')
             ? e.message
             : `${errorMessage(e)} Cambia las fotos e inténtalo otra vez.`,
       )
@@ -122,6 +126,14 @@ export function IdCardStep() {
     navigate('/signup/contact')
   }
 
+  const retakePhotos = () => {
+    const photoStore = useIdCardPhotos.getState()
+    photoStore.setPhoto('front', null)
+    photoStore.setPhoto('back', null)
+    saveIdCard({ scanId: null, scanExpiresAt: null, data: emptyIdCard, needsReview: [], confirmed: false })
+    navigate('/signup/id-card/camera?side=front')
+  }
+
   const review = (k: IdCardField) => saved.needsReview.includes(k)
 
   return (
@@ -145,10 +157,36 @@ export function IdCardStep() {
           {scanning ? 'Leyendo tu carnet, espera un momento.' : saved.scanId ? 'Listo. Leímos estos datos.' : ''}
         </p>
 
-        {scanError && (
+        {scanError && !missingDisability && (
           <p role="alert" className="step__alert">
             {scanError}
           </p>
+        )}
+
+        {scanError && missingDisability && (
+          <section role="alert" className="idcard-issue" aria-labelledby="disability-not-found-title">
+            <h2 id="disability-not-found-title" className="idcard-issue__title">
+              No encontramos datos de discapacidad
+            </h2>
+            <p>{scanError}</p>
+            <p>Para volver a intentarlo, las fotos deben mostrar:</p>
+            <ul>
+              <li>El documento completo por ambos lados.</li>
+              <li>Texto nítido, sin borrones, cortes ni reflejos.</li>
+              <li>El NUI, el tipo y el porcentaje de discapacidad.</li>
+            </ul>
+            <div className="idcard-issue__actions">
+              <Button onPress={retakePhotos}>Subir fotos nuevas</Button>
+              <a
+                className="ui-button ui-button--secondary"
+                href="https://www.salud.gob.ec/calificacion-o-recalificacion-de-personas-con-discapacidad-2/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Calificar o actualizar mi cédula en el MSP
+              </a>
+            </div>
+          </section>
         )}
 
         {hasValidatedScan && (
@@ -257,7 +295,7 @@ export function IdCardStep() {
           </p>
           <ul>
             <li>
-              <a href="https://www.salud.gob.ec/calificacion-o-recalificacion-de-personas-con-discapacidad/" target="_blank" rel="noreferrer">
+              <a href="https://www.salud.gob.ec/calificacion-o-recalificacion-de-personas-con-discapacidad-2/" target="_blank" rel="noreferrer">
                 Cómo calificar o actualizar la discapacidad en el MSP (se abre en otra pestaña)
               </a>
             </li>

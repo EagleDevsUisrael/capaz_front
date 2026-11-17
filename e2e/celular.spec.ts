@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { registerCandidate } from './flows'
-import { dismissMobileReadScreenPrompt, firstJobId } from './helpers'
+import { dismissMobileReadScreenPrompt, firstJobId, photo } from './helpers'
 
 async function expectNoHorizontalOverflow(page: Page, name: string) {
   const { scroll, width } = await page.evaluate(() => ({
@@ -90,5 +90,29 @@ test.describe('Celular', () => {
     await page.getByRole('button', { name: 'Tomar foto' }).click()
     await expect(page.getByRole('img', { name: /Foto tomada/ })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Usar esta foto' })).toBeVisible()
+  })
+
+  test('explica qué hacer cuando la cédula no muestra datos de discapacidad', async ({ page }) => {
+    await page.route('**/api/id-card/scan', (route) =>
+      route.fulfill({
+        status: 422,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: {
+            code: 'DISABILITY_DATA_NOT_FOUND',
+            message: 'No encontramos información de discapacidad en el documento.',
+          },
+        }),
+      }),
+    )
+    await page.goto('/signup/id-card')
+    await page.locator('#idcard-front').setInputFiles(photo('frente.png'))
+    await page.locator('#idcard-back').setInputFiles(photo('reverso.png'))
+    await page.getByRole('button', { name: 'Leer mis datos' }).click()
+
+    await expect(page.getByRole('heading', { name: 'No encontramos datos de discapacidad' })).toBeVisible()
+    await expect(page.getByText(/sin borrones, cortes ni reflejos/i)).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Subir fotos nuevas' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /actualizar mi cédula en el MSP/i })).toHaveAttribute('href', /salud\.gob\.ec/)
   })
 })
